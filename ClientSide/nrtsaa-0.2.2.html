@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<hmtl >
+	<head>
+		<title>NRTSAA-0.1.0</title>
+		<meta charset="utf-8">			
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="./lib/leaflet.css"/>
+		<script src="./lib/leaflet.js"></script>
+		<script src="./src/src.js"></script>
+		<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
+		<script src="./dist/migrationlayerpretrify.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+		<style>
+		
+			html, body {
+				margin:0px; padding:0px
+			}
+		
+			.container {
+				display:block;
+			}
+			
+			#checkbox {
+				position:fixed;
+				top:150px;
+				right:40%;
+				width: 300px;
+    			padding: 12px 20px;
+				margin: 8px 0;
+				display: block;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				box-sizing: border-box;
+				font-family:sans-serif;
+				visibility:hidden;
+				z-index:100;
+				background:white;
+			}
+			
+			#top-title {
+				display:block;
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 120px;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:30px;
+				text-align: center;
+			}
+			
+			#footer-title {
+   				position: fixed;
+    			height: 40px;
+    			margin-top: 1em;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+			}	
+			
+			#map {
+				height:920px;
+				width:100%;
+				z-index:1;
+			}
+			
+			span {
+			 	font-family:sans-serif;
+			}
+			
+			#userControl {
+				color:#FFF;
+				height: 80px;
+				text-align: center;
+			}
+			
+			input[type=text] {
+    			width: 300px;
+    			padding: 12px 20px;
+				margin: 8px 0;
+				display: inline-block;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				box-sizing: border-box;
+				text-align: center;
+			}
+			
+			#userControl input[type=button] {
+				width: 120px;
+				background-color: #4CAF50;
+				color: white;
+				padding: 14px 20px;
+				margin: 8px 0;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				
+			}
+			
+			input[type=button]:hover {
+				background-color: #45a049;
+			}
+			
+			.info {
+				padding: 6px 8px;
+				font: 14px/16px  sans-serif; <!--Arial, Helvetica,-->
+				background: white;
+				background: rgba(255,255,255,0.7);
+				box-shadow: 0 0 15px rgba(0,0,0,0.5);
+				border-radius: 5px;
+			}
+			
+			.legend {
+				line-height: 18px;
+				color: #555;
+			}
+			
+			.legend i {
+				width: 21px;
+				height: 12px;
+				float: left;
+				margin-right: 8px;
+				opacity: 0.6;	
+			}
+		
+			
+		</style>
+	</head>
+	<body>
+		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
+		<div id="top-title">
+			<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left"/>
+			<div style="float:center;display:inline;z-index:1000">
+				<div id="userControl" >
+					<input type="button" id="splunk" value="Call Splunkd"></input>
+					<input type="button" value="setData" class="btn" onclick="setData()"></input>	
+					<input type="button" class="hide" value="Select the Host(s):"><span></span></input>
+				</div>
+			</div>
+			<div id="calendar" style="float:right">	
+					<input id="timeInput" type="text" name="datetimes" value=""></input>
+					<p id="earliestDate"></p>
+					<p id="latestDate"></p>			
+			</div>	
+		</div>
+		<!--#######################################################################-->
+		
+		<!--#######################################################################-->
+			<div id="checkbox">
+				<label class="container">Gaia</label>
+		  		<input type="checkbox" name="host" value="gea03.n1data.lan"><!--checked="checked"-->				
+				<label class="container">Esasky</label>
+		  		<input type="checkbox" name="host" value="ammiapp02">
+				<label class="container">Vospace</label>
+		  		<input type="checkbox" name="host" value="vospace.n1data.lan">
+		  		<label class="container">Lisa PathFinder</label>
+		  		<input type="checkbox" name="host" value="lpfsa.n1data.lan">
+		  		<label class="container">ISS-SolACES</label>
+		  		<input type="checkbox" name="host" value="vospace.n1data.lan">
+		  		<label class="container">PLA</label>
+		  		<input type="checkbox" name="host" value="pla">
+		  		<label class="container">SSA</label>
+		  		<input type="checkbox" name="host" value="ssa.esac.esa.int">
+			</div>
+		<!--#######################################################################-
+		<div class="wrapper" style="background-color:rgba(50,10,30,0.2);border:2px solid black">
+			<form id="timeForm">
+				<div id="form-uname">
+					<label for="eT" id="nameLabel">introduce earliest time:</label>
+					<input id="eT" type="text" name="earliest" value="2018-05-28T16:00:00.000"></input>
+				
+					<label for="lT" id="nameLabel">introduce latest time:</label>
+					<input id="lT" type="text" name="latest" value="2018-05-28T16:55:0.000"></input>
+				</div>
+				<div>
+					<button id="subButton" type="button">GET PARAMETERS</button> ESA 
+					<input type="button" value="setData" class="btn" onclick= ESA "setData()">
+				</div>
+			</form>
+			<div id="checkbox">
+				<p>Select the Host:</p>
+				<label class="container">Gaia</label>
+  				<input type="checkbox" checked="checked" name="host" value="gaia">				
+				<label class="container">Esasky</label>
+  				<input type="checkbox" name="host" value="esasky">
+				<label class="container">Vospace</label>
+  				<input type="checkbox" name="host" value="vospace">
+			</div>
+			
+			</div>			
+		</div>
+		--#######################################################################-->
+		<div id="map"></div>
+		<div id="footer-title"></div>	
+		
+		<!--#################################
+		######################################-->	
+			
+		<script>
+			
+			var data3 = [];
+			var dataParams = {earliest:"",latest:""};
+			var ServerColor = Object.freeze({
+				GAIA:			'#0004FF',
+				PLANETARY:		'#13ADFB',
+				CSA:			'#0A9C10',
+				ULYSSES:		'#FDCF08',
+				ESASKY:			'#10115C',
+				ISSSOLACES:		'#003C02',
+				VOSPACE:		'#E868EF',
+				SSA:			'#19F821',
+				LISAPATHFINDER:	'#19F8EE'
+			});
+			
+			/******************************************************************/
+			
+			var start = moment().subtract(29, 'days');
+			var end = moment();
+			
+			function writeDate(start,end)
+			{
+				$('#earliestDate').val(start.format('YYYY-MM-DD').toString()+"T"+start.format('hh:mm').toString()+":00.000");
+				$('#latestDate').val(end.format('YYYY-MM-DD')+"T"+end.format('hh:mm')+":00.000");
+				
+				dataParams.earliest = $('#earliestDate').val();
+				dataParams.latest = $('#latestDate').val();
+				
+				var count = 1;
+				$('#checkbox input:checked').each(function()
+				{
+					
+					var host = "host"+count.toString();
+					dataParams[host] = $(this).attr('value');
+					count++;
+				});
+	
+			}
+				
+			$('input[name="datetimes"]').daterangepicker(
+			{
+				timePicker: true,
+				minYear: 2018,
+				startDate: moment().startOf('hour'),
+				endDate: moment().startOf('hour').add(32, 'hour'),
+				locale:
+				{
+					format: 'YY/MM/DD A'
+				}
+			},writeDate);
+			writeDate(start,end);
+			
+			
+			/**************************  Map Settings  ************************************/
+			
+			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
+				
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+			
+			
+			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+
+							
+			/*  
+				Global variable for our map. 
+				setView allows us to focus on Madrid (lat,lng)
+				with a specific zoom level 
+			*/
+				
+			var map = L.map('map', {
+    			center: [20, 0],
+				zoom: 3,
+				layers: osmLayer
+			});
+
+			var baseMaps = {
+				"OSM": osmLayer,
+				"CARTO-Dark": baseMapDark,
+				"Black and Whilte": blackAndWhite
+			};
+			
+			L.control.layers(baseMaps).addTo(map);
+			
+			var legend = L.control({position: 'bottomright'});
+					
+			
+			/**************   Generate a legend for the map   ***************/				
+			legend.onAdd = function (map)
+			{
+				var div = L.DomUtil.create('div', 'info legend');
+				// loop through our ServerColor list and generate a label with a colored square for each Host		
+				for (var x in ServerColor)
+				{			
+					div.innerHTML += '<i style="background:' + ServerColor[x].toString() +
+					 '"></i> ' + x.toString() + '<br>';
+				}
+				return div;
+			};
+			legend.addTo(map);
+			
+			
+			/*************************************************/
+			var data = [{"from":[-4.10,40.10],"to":[-4.0,40.0],"labels":[null,null],"color":"#106090"}];
+			
+			var migrationLayer = new L.migrationLayer(
+			{
+				map: map,
+				data: data3,
+				pulseRadius:6,
+				pulseBorderWidth:3,
+				arcWidth:1,
+				arcLabel:false,
+				arcLabelFont:'10px sans-serif',
+			});
+			
+			function setData()
+			{ 
+				migrationLayer.setData(data3);
+				//data3 = data;
+			}
+			
+			map.on('moveend', function(e) {
+			   setData();
+			});
+			
+			/*****************************************************************			
+			var dataStr;
+			var data3 = [];
+			function getParams() 
+			{
+				dataParams.earliest = document.getElementById('eT').value;
+				dataParams.latest = document.getElementById('lT').value;
+				$('#checkbox input:checked').each(function()
+				{
+					dataParams.host.push($(this).attr('value'));
+				});
+				
+				console.log(dataParams);
+				dataStr = JSON.stringify(dataParams);
+				console.log(dataStr);
+			}
+			
+			var subButton = document.getElementById('subButton');
+			subButton.addEventListener('click', getParams, false);
+			*****************************************************************/
+			
+			$(".hide").click(function()
+			{
+				//$("#checkbox").slideToggle("slow");
+				$("#checkbox").css("visibility")==="hidden"?
+				$("#checkbox").css({"visibility":"visible"}) : $("#checkbox").css({"visibility":"hidden"});			
+			});		
+			
+			
+			var pickColor = function(host)
+			{
+				return ServerColor[host];
+			};
+			
+			var startSplunk = function()
+			{
+				$.ajax(
+				{
+					url:"http://172.25.3.155:8123",
+					dataType: "text",
+					success: function(data)
+					{
+						var geojson = JSON.parse(data);
+						data3 = [];
+						
+						for (var x in geojson.features)
+						{
+							var ob = new Object();
+							
+							ob = {"from":[-4.10,40.10],"to":[],"labels":[null,null]};
+							
+							ob.color = pickColor(geojson.features[x].properties.host.toString());
+							
+							ob.to = [(geojson.features[x].geometry.coordinates[1])
+							,(geojson.features[x].geometry.coordinates[0])];
+						
+							data3.push(ob);
+						}						
+						setData();					
+					}
+				});
+			};
+			
+			/***** AJAX Request *****/
+			$(window).on('load', function()
+			{ 		
+					startSplunk();
+					setTimeout(startSplunk,2000);
+					setInterval(startSplunk,305000);// 5' * 60" * 1000 ms = 300,000 ms						
+			});
+				
+		</script>
+	</body>
+</html>
