@@ -1,0 +1,33 @@
+host="ufa.esac.esa.int" sourcetype="access_combined" 
+| iplocation ClientIP 
+| table lat lon Country City ClientIP
+
+
+
+"/ufa-cl-web"
+| rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
+| iplocation clientip 
+| table  lat lon Country clientip
+
+
+#########################################################################
+
+"/ufa-cl-web"
+| rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
+| iplocation clientip 
+| table  lat lon Country clientip
+
+"/ufa-sl-server" 
+| rename ClientIP AS clientip
+| iplocation clientip
+| table lat lon Country clientip
+
+
+"ufa-sl-server"
+| rename ClientIP AS clientip
+| iplocation clientip
+| table lat lon Country clientip
+| append [search "/ufa-cl-web"
+| rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
+| iplocation clientip 
+| table  lat lon Country clientip ]

@@ -1,0 +1,4 @@
+host=pla
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip  
+| table clientip lat lon Country

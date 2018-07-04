@@ -1,0 +1,6 @@
+host="vospace.n1data.lan"
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| search clientip!=172*, clientip!=127*, clientip!=10.*
+| dedup clientip
+| iplocation clientip
+| table clientip lat lon Country City

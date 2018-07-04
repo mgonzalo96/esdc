@@ -1,0 +1,27 @@
+host="gea03.n1data.lan" sourcetype="access_combined" 
+| stats sum(bytes) as total_B by clientip
+| eval total_MB= round(total_B/1024/1024,3)
+| table clientip total_MB
+
+///////////////////////////////////////////////////////
+
+index="esdc" 
+| where host="geadist" OR host="geadev01.n1data.lan" OR host="gea03.n1data.lan" OR host="geafiles.esac.es.int" OR host="geaint" 
+| stats count by host, sourcetype
+
+///////////////////////////////////////////////////////
+
+host="gea03.n1data.lan" sourcetype="access_combined" clientip!=10.* clientip!=172.*
+| iplocation clientip 
+| search Country!=""
+| table lat lon Country City clientip
+
+
+///////////////////////////////
+sourcetype!="catalina"
+| search bytes !="" 
+| stats sum(bytes) as total_bytes by host
+| eval total_gb=round(total_bytes/1024/1024/1024,3)
+| table host total_gb
+
+

@@ -1,0 +1,44 @@
+There are solutions! If you are willing decide up-front that you want the
+timechart to report in 30-minute intervals (or longer), try this
+
+    sourcetype="abc" Service="xyz" earliest=-0d@d latest=now |
+    bucket _time span=30m |
+    stats avg(Time) as avgTme by _time |
+    eval ReportKey="Today" |
+    append [search sourcetype="abc" Service="xyz" earliest=-7d@d latest=-6d@d |
+    bucket _time span=30m |
+    stats avg(Time) as avgTme by _time |
+    eval ReportKey="LastWeek" |
+    eval _time=_time+(60*60*24*7)] |
+    chart max(avgTme) as avgTime over _time by ReportKey
+
+The above summarizes the data before returning from the subsearch. And another
+way of doing it, which may be even better:
+
+    sourcetype="abc" Service="xyz" earliest=-7d@d latest=now |
+    fields Time |
+    eval weekAgo = relative_time(now(), "-6d@d") |
+    eval today = relative_time(now(), "@d") |
+    eval ReportKey = "omit" |
+    eval ReportKey = case(_time < weekAgo,"Last Week", _time > today,"Today") |
+    where ReportKey != "omit" |
+    eval _time = if(ReportKey=="Last Week", _time+(60*60*24*7), _time) |
+    timechart fixedrange=f avg(Time) as avgTime by ReportKey
+
+This second solution does not use a subsearch. Instead, it collects all the data
+ for the last week, and then categorizes it based on _time. If the data is not
+ during the time that we want, it is dropped by the where command. The _time is
+ tweaked for data from a week ago, and then reported by the categories.
+
+I haven't actually tested these searches, so there may be typos.Let me know if
+it doesn't work, and I'll help debug my typing!
+
+
+sourcetype=yoursourcetype |
+eval weekAgo = relative_time(now(), "-6d\@d") |
+eval today = relative_time(now(), "\@d") |
+eval ReportKey = "omit" |
+eval ReportKey = case(_time < weekAgo,"Last Week", _time > today,"Today") |
+where ReportKey != "omit" |
+eval _time = if(ReportKey=="Last Week", _time+(60*60*24*7), _time) |
+timechart fixedrange=f count by ReportKey

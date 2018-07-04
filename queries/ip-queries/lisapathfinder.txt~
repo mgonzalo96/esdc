@@ -1,0 +1,13 @@
+host="lpfsa.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| search clientip!=10.* clientip!=192.*
+| iplocation clientip  
+| table clientip lat lon Country City
+
+
+
+
+host="lpfsa.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| iplocation clientip 
+| table lat lon Country

@@ -1,0 +1,16 @@
+host=ammiapp02 sourcetype="esasky_localhost_access" 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| search clientip!=172*, clientip!=127*, clientip!=10.*
+| iplocation clientip
+| table clientip lat lon Country City
+
+//////////////////////////////////////////////////////
+
+host=ammiapp01 sourcetype="esasky_localhost_access" 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| search clientip!=172.*, clientip!=127.*, clientip!=10.*
+| iplocation clientip
+| table clientip lat lon Country City
+
+//////////////////////////////////////////////////////
+

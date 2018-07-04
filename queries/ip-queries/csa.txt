@@ -1,0 +1,6 @@
+host=csa 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| iplocation clientip
+| table clientip lat lon Country host]
+| search Country!=""
+| stats count by host

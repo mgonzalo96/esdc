@@ -1,0 +1,7 @@
+index="esdc" sourcetype="access_combined" host="vospace.n1data.lan" ClientIP!=10.* ClientIP!=172.*| stats count by ClientIP 
+| iplocation ClientIP
+| rename lat as end_lat lon as end_lon
+| eval start_lon="-3.95297", start_lat="40.44332", color="#FF3300", animate="true", pulse_at_start="true", end_lat=tostring(round(end_lat,6)), end_lon=tostring(round(end_lon,6))
+| table animate color end_lon end_lat pulse_at_start start_lon start_lat ClientIP 
+| dedup ClientIP 
+| fields - ClientIP

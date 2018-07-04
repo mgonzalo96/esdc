@@ -1,0 +1,19 @@
+host="isssolac.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| search clientip!=10.* clientip!=192.*
+| iplocation clientip  
+| table clientip lat lon Country City
+
+//////////////////////////////////////////////////////////////
+
+host="isssolac.n1data.lan" 
+| rex field=_raw "(?:[[octet]]\.[[octet]]\.[[octet]]\.[[octet]]){1}.*\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| search clientip!=10.* clientip!=192.*
+| iplocation clientip  
+| table clientip lat lon Country City
+
+
+host="isssolac.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip  
+| table clientip lat lon Country

@@ -1,0 +1,144 @@
+host=gea03.n1data.lan sourcetype=access_combined clientip!=10.* clientip!=172.* earliest="1524643000" latest="1524668000" 
+| iplocation clientip
+| search Country!="" 
+| chart dc(clientip) OVER date_minute span=5 BY Country
+
+
+host="gea03.n1data.lan" 
+| iplocation clientip 
+| search clientip="2.206.2.146" 
+| bin _time span=2m 
+| dedup _time 
+| table clientip _time
+
+
+host="gea03.n1data.lan" 
+| iplocation clientip 
+| search clientip!="" 
+| bin _time span=5m 
+| dedup clientip _time 
+| table clientip _time
+
+
+host="gea03.n1data.lan" 
+| iplocation clientip 
+| search Country!="" 
+| bin _time span=5m 
+| dedup clientip _time 
+| eval host="GAIA"
+| table lat lon Country _time host
+
+
+
+host=gea03.n1data.lan sourcetype=access_combined clientip!=10.* clientip!=172.* earliest="1524643000" latest="1524668000" 
+| iplocation clientip
+| search Country!="" 
+| chart dc(clientip) BY date_mday span=1 date_hour span=1
+
+
+
+host=gea03.n1data.lan sourcetype=access_combined clientip!=10.* clientip!=172.* clientip!=193.* earliest="1524643000" latest="1524668000" 200
+| iplocation clientip
+| search Country!="" 
+| bin _time span=15m 
+| chart count OVER _time by Country
+
+
+
+host=gea03.n1data.lan | stats dc(clientip) by host 
+| append [search host=ammiapp01 | rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" | stats dc(clientip) by host ]
+| append [search host=ammiapp02 | rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" | stats dc(clientip) by host ]
+
+
+
+"ufa-sl-server"
+| rename ClientIP AS clientip
+| iplocation clientip
+| table lat lon Country host
+| append [search "/ufa-cl-web"
+| rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
+| iplocation clientip 
+| table  lat lon Country host]
+| append [search host="lpfsa.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| iplocation clientip 
+| table lat lon Country host]
+| append [search host="isssolac.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip  
+| table clientip lat lon Country host]
+| append [ search host=pla
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip  
+| table clientip lat lon Country host]
+| append [search host="ssa.esac.esa.int"
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip
+| table clientip lat lon Country host]
+| append [search host="vospace.n1data.lan" sourcetype="access_combined"
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| iplocation clientip
+| table clientip lat lon Country host]
+| search Country!=""
+| stats count by host
+
+
+########## Q U E R Y #################
+
+host=gea03.n1data.lan
+| iplocation clientip
+| eval host="GAIA"
+| table lat lon Country host _time clientip
+| append [search "/ufa-cl-web"
+| rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
+| eval host="ULYSSES"
+| iplocation clientip 
+| table  lat lon Country host _time clientip]
+| append [search "ufa-sl-server"
+| rename ClientIP AS clientip
+| eval host="ULYSSES"
+| iplocation clientip
+| table lat lon Country host _time clientip]
+| append [search host="lpfsa.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| eval host="LPF"
+| iplocation clientip 
+| table lat lon Country host _time clientip]
+| append [search host="isssolac.n1data.lan" 
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| eval host="ISSSOLACES"
+| iplocation clientip  
+| table clientip lat lon Country host _time]
+| append [ search host=pla
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| eval host="PLANETARY"
+| iplocation clientip  
+| table clientip lat lon Country host _time]
+| append [search host="ssa.esac.esa.int"
+| rex field=_raw "\"(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| eval host="SSA"
+| iplocation clientip
+| table clientip lat lon Country host _time]
+| append [search host="vospace.n1data.lan" sourcetype="access_combined"
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| eval host="VOSPACE"
+| iplocation clientip
+| table clientip lat lon Country host _time]
+| append [search host=csa 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])"
+| eval host="CSA" 
+| iplocation clientip
+| table clientip lat lon Country host _time]
+| append [search host=ammiapp01 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| eval host="ESASKY"
+| iplocation clientip
+| table clientip lat lon Country host _time]
+| append [search host=ammiapp02 
+| rex field=_raw "^(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])" 
+| eval host="ESASKY"
+| iplocation clientip
+| table clientip lat lon Country host _time]
+| search Country!=""
+| dedup clientip
+| table lat lon host _time clientip
