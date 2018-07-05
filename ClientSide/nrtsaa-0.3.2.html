@@ -38,6 +38,7 @@
 				right: 0;
 				left: 0;
 				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				z-index:2;
 			}	
 			
 			#map {
@@ -53,12 +54,15 @@
 				background: white;
 				background: rgba(255,255,255,0.7);
 				box-shadow: 0 0 15px rgba(0,0,0,0.5);
-				border-radius: 5px;
+				border-radius: 2px;
+				z-index:500
 			}
 			
 			.legend {
 				line-height: 18px;
 				color: #555;
+				z-index:500;
+				position:fixed;bottom:0px;
 			}
 			
 			.legend i {
@@ -94,8 +98,15 @@
 				font-family: Segoe UI, sans-serif;
 				text-shadow: 0.5px 0.5px grey;
 				font-weight: normal;
-				font-style: normal;
-				
+				font-style: normal;			
+			}
+			
+			#slide-control-legend {
+				position:absolute;
+				left:40px;
+				top:5px;
+				background-color:red;
+				z-index:1500				
 			}
 			
 		</style>
@@ -107,10 +118,16 @@
 			<div id="timeStamp">foo</div>
 		</div>
 		<div id="map"></div>
-		<div id="footer-title"></div>		
+		<div id="footer-title">
+			<div id="slide-control-legend">
+				<a>^</a>
+			</div>
+		</div>		
 			
 		<script>
-			
+		$(window).on('load', function() // changed the position of this function
+		{ 	
+		
 			var countHost = {};
 			var data3 = [];
 			var ServerColor = Object.freeze({
@@ -184,10 +201,16 @@
 												ServerColor[x].toString()+
 							 					'"></i> ' + x.toString() + '<br>';				
 					}
+					
 					return div;
 			};
 			
-			 
+			
+			$('#slide-control-legend').on('click', function()
+			{
+				$('.info.legend').slideToggle("slow");
+			});
+			
 			
 			/**************   Home buton  ***************/
 			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});
@@ -289,8 +312,7 @@
 			};
 			
 			
-			$(window).on('load', function()
-			{ 		
+					
 					startSplunk();
 					setTimeout(startSplunk,2000);
 					setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms						
