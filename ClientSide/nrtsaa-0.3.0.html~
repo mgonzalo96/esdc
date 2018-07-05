@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<hmtl >
+	<head>
+		<title>NRTSAA-0.3.0</title>
+		<meta charset="utf-8">			
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+		<link rel="stylesheet" href="./lib/leaflet.css"/>
+		<script src="./lib/leaflet.js"></script>
+		<script src="./src/src.js"></script>
+		<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
+		<script src="./dist/migrationlayerpretrify.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="./dist/leaflet.zoomhome.css"/>
+		<script src="./dist/leaflet.zoomhome.js"></script>
+		<script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
+	
+
+		<style>
+		
+			html, body {
+				margin:0px; padding:0px
+			}
+		
+					
+			#top-title {
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 40px;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:30px;
+				padding:10px
+			}
+			
+			#footer-title {
+   				position: fixed;
+    			height: 20px;
+    			margin-top: 1em;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+			}	
+			
+			#map {
+				height:980px;
+				width:100%;
+				z-index:1;
+			}
+			
+
+			.info {
+				padding: 6px 8px;
+				font: 14px/16px  sans-serif; <!--Arial, Helvetica,-->
+				background: white;
+				background: rgba(255,255,255,0.7);
+				box-shadow: 0 0 15px rgba(0,0,0,0.5);
+				border-radius: 5px;
+			}
+			
+			.legend {
+				line-height: 18px;
+				color: #555;
+			}
+			
+			.legend i {
+				width: 25px;
+				height: 12px;
+				float: left;
+				margin-right: 8px;
+				opacity: 0.6;
+				position:relative;
+				border-radius: 5px;	
+			}
+		
+			#timeStamp {
+				font-size:20px;
+				text-align:center;
+				font-family: Segoe UI, sans-serif
+			}
+			
+			.dot {
+				height: 12px;
+				width: 12px;
+				background-color: red;
+				border-radius: 50%;
+				display: block;
+				valign:center
+			}
+			
+		</style>
+	</head>
+	<body>
+		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
+		<div id="top-title">
+			<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/>
+			<div id="timeStamp">foo</div>
+		</div>
+		<div id="map"></div>
+		<div id="footer-title"></div>	
+		
+		<!--#################################
+		######################################-->	
+			
+		<script>
+			
+			var data3 = [];
+			var ServerColor = Object.freeze({
+				Gaia:				'#01FF70',//'#0004FF',
+				Planck:				'#FFDC00',//'#13ADFB',
+				Cluster:			'#FF851B',//'#0A9C10',
+				Ulysses:			'#FF4136',//'#FDCF08',
+				ESASky:				'#85144b',//'#10115C',
+				ISSSolACES:			'#F012BE',//'#003C02',
+				VOSpace:			'#001f3f',//'#E868EF',
+				Soho:				'#0074D9',//'#19F821',
+				LisaPathfinder:		'#7FDBFF'//'#19F8EE'
+			});
+			
+			
+			/*************************  Map Settings  ************************/
+			
+			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
+				
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+			
+			
+			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+			
+			var mapLink = '<a href="http://www.esri.com/">Esri</a>';
+        	var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+			var satelliteMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: '&copy; '+mapLink+', '+wholink,
+            maxZoom: 18,
+            });
+							
+			/*  
+				Global variable for our map. 
+				setView allows us to focus on Madrid (lat,lng)
+				with a specific zoom level 
+			*/
+				
+			var map = L.map('map', {
+    			center: [20, 0],
+				zoom: 3,
+				layers: osmLayer,
+				zoomControl: false
+			});
+
+			var baseMaps = {
+				"OSM": osmLayer,
+				"CARTO-Dark": baseMapDark,
+				"Black and Whilte": blackAndWhite,
+				"Satellite Map": satelliteMap
+			};
+			
+			
+			L.control.layers(baseMaps).addTo(map);
+			
+			var legend = L.control({position: 'bottomleft'});
+			
+			legend.onAdd = function (map)
+			{
+					var div = L.DomUtil.create('div', 'info legend');
+					// loop through our ServerColor list and generate a label with a colored square for each Host		
+					for (var x in ServerColor)
+					{			
+						div.innerHTML += '<i style="background:' + ServerColor[x].toString() +
+						 '"><span class="dot"></span></i> ' + x.toString() + '<br>';
+					}
+					return div;
+			};
+			
+			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});
+			zoomHome.addTo(map);
+			
+			/**************   Generate a legend for the map   ***************/				
+			
+			
+			
+			legend.addTo(map);
+			
+			
+			/*************************************************/
+			
+			
+			var migrationLayer = new L.migrationLayer(
+			{
+				map: map,
+				data: data3,
+				pulseRadius:9,
+				pulseBorderWidth:2,
+				arcWidth:0,
+				arcLabel:false,
+				arcLabelFont:'10px sans-serif',
+			});
+			
+			function setData()
+			{ 
+				migrationLayer.setData(data3);
+				//data3 = data;
+			}
+			
+			map.on('move', function(e) {
+			   setData();
+			});
+			
+						
+			var pickColor = function(host)
+			{
+				return ServerColor[host];
+			};
+			
+			var startSplunk = function()
+			{
+				$.ajax(
+				{
+					url:"http://172.25.3.155:8123",
+					dataType: "text",
+					success: function(data)
+					{
+						var geojson = JSON.parse(data);
+						data3 = [];
+						
+						for (var x in geojson.features)
+						{
+							var ob = new Object();
+							
+							ob = {"from":[-4.10,40.10],"to":[],"labels":[null,null]};
+							
+							ob.color = pickColor(geojson.features[x].properties.host.toString());
+							
+							ob.to = [(geojson.features[x].geometry.coordinates[1])
+							,(geojson.features[x].geometry.coordinates[0])];
+						
+							data3.push(ob);
+						}
+						$('#timeStamp').text(new Date(Date.now()));						
+						setData();					
+					}
+				});
+			};
+			
+			/***** AJAX Request *****/
+			$(window).on('load', function()
+			{ 		
+					startSplunk();
+					setTimeout(startSplunk,2000);
+					setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms						
+			});
+				
+		</script>
+	</body>
+</html>

@@ -60,7 +60,7 @@
 			}	
 			
 			#map {
-				height:920px;
+				height:900px;
 				width:100%;
 				z-index:1;
 			}
@@ -201,15 +201,15 @@
 			var data3 = [];
 			var dataParams = {earliest:"",latest:""};
 			var ServerColor = Object.freeze({
-				GAIA:			'#0004FF',
-				PLANETARY:		'#13ADFB',
-				CSA:			'#0A9C10',
-				ULYSSES:		'#FDCF08',
-				ESASKY:			'#10115C',
-				ISSSOLACES:		'#003C02',
-				VOSPACE:		'#E868EF',
-				SSA:			'#19F821',
-				LISAPATHFINDER:	'#19F8EE'
+				Gaia:				'#0004FF',
+				Planck:				'#13ADFB',
+				Cluster:			'#0A9C10',
+				Ulysses:			'#FDCF08',
+				ESASky:				'#10115C',
+				ISS-SolACES:		'#003C02',
+				VOSpace:			'#E868EF',
+				Soho:				'#19F821',
+				Lisa-Pathfinder:	'#19F8EE'
 			});
 			
 			/******************************************************************/
