@@ -163,6 +163,8 @@
 						div.innerHTML += '<i style="background:' + ServerColor[x].toString() +
 						 '"><span class="dot"></span></i> ' + x.toString() + '<br>';
 					}
+					
+					L.DomEvent.on(div.childNodes[this],'click', function(ev){map.setView([20,20]);});
 					return div;
 			};
 			

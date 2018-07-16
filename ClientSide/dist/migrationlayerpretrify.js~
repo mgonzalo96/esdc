@@ -3,31 +3,29 @@
   var startX = -4.0;
   var startY = 40.0;
   var i = {
-      calculateColor: function (t, i)
-      {
-        if (0 === t.indexOf("#"))
-        {
+      calculateColor: function (t, i) {
+        if (0 === t.indexOf("#")) {
           var s = t.slice(1),
-            a = parseInt(s.slice(0, 2), 16),
-            e = parseInt(s.slice(2, 4), 16),
-            r = parseInt(s.slice(4), 16)
-          return "rgba(" + a + "," + e + "," + r + "," + i + ")"
+          a = parseInt(s.slice(0, 2), 16),
+          e = parseInt(s.slice(2, 4), 16),
+          r = parseInt(s.slice(4), 16);
+          return "rgba(" + a + "," + e + "," + r + "," + i + ")";
         }
-        return /^rgb\(/.test(t) ? t.replace(/rgb/, "rgba").replace(")", ",") + i + ")" : t.split(",").splice(0, 3).join(",") + i + ")"
+        return /^rgb\(/.test(t) ? t.replace(/rgb/, "rgba").replace(")", ",") + i + ")" : t.split(",").splice(0, 3).join(",") + i + ")";
       }
     },
     s = {
       forEach: function (t, i, s)
       {
-        if ("function" == typeof Array.prototype.forEach) t.forEach(i, s)
+        if ("function" == typeof Array.prototype.forEach) t.forEach(i, s);
         else
-          for (var a = 0, e = t.length; e > a; a++) i.apply(s, [t[a], a, t])
+          for (var a = 0, e = t.length; e > a; a++) i.apply(s, [t[a], a, t]);
       },
       map: function (t, i, s)
       {
         if ("function" == typeof Array.prototype.map) return t.map(i, s)
         for (var a = [], e = 0, r = t.length; r > e; e++) a[e] = i.apply(s, [t[e], e, t])
-        return a
+        return a;
       }
     },
     a = function ()
@@ -36,7 +34,7 @@
       {
         this.x = t.x, this.y = t.y, this.rotation = t.rotation, this.style = t.style, this.color = t.color, this.size = t.size, this.borderWidth = t.borderWidth, this.borderColor = t.borderColor
       }
-      return t.prototype.draw = function (t)
+      return t.prototype.draw = function (t);
       {
         t.save(), t.translate(this.x, this.y), t.rotate(this.rotation), t.lineWidth = this.borderWidth || 0, t.strokeStyle = this.borderColor || "#000", t.fillStyle = this.color || "#000", t.beginPath(), "circle" === this.style ? t.arc(0, 0, this.size, 0, 2 * Math.PI, !1) : "arrow" === this.style && (t.moveTo(-this.size, -this.size), t.lineTo(this.size, 0), t.lineTo(-this.size, this.size), t.lineTo(-this.size / 4, 0), t.lineTo(-this.size, -this.size)), t.closePath(), t.stroke(), t.fill(), t.restore()
       }, t
@@ -67,8 +65,8 @@
           if (t.font = this.label, this.startLabel)
           {
             var i = -4.0 - 15,
-              s = 40.0 + 5
-            t.fillText(this.startLabel, i, s)
+              s = 40.0 + 5;
+            t.fillText(this.startLabel, i, s);
           }
           if (this.endLabel)
           {
@@ -207,6 +205,9 @@
               width: 15,
               color: t.color
             })*/
+            
+            //i -> draw the arc lines
+            
           /*this.store.arcs.push(i), this.store.markers.push(s), */this.store.pulses.push(n)/*, this.store.sparks.push(h)*/
         }, this))
       }, i.prototype.start = function (i)
@@ -229,52 +230,49 @@
         this.playAnimation = !1
       }, i
     }()
+  
   L.MigrationLayer = L.Class.extend(
   {
     options:
     {
-      map:
-      {},
-      data:
-      {},
+      map:{},
+      data:{},
       pulseRadius: 25,
       pulseBorderWidth: 3,
       arcWidth: 1,
       arcLabel: !0,
       arcLabelFont: "15px sans-serif",
-      Marker:
-      {},
-      Spark:
-      {}
+      Marker:{},
+      Spark:{}
     },
-    _setOptions: function (t, i)
-    {
+    
+    _setOptions: function (t, i) {
       t.hasOwnProperty("options") || (t.options = t.options ? L.Util.create(t.options) :
       {})
       for (var s in i) t.options[s] = i[s]
       return t.options
     },
-    initialize: function (t)
-    {
-      this._setOptions(this, t), this._map = this.options.map ||
-      {}, this._data = this.options.data ||
-      {}, this._style = {
-        pulse:
-        {
+    
+    initialize: function (t){
+      this._setOptions(this, t),
+      this._map = this.options.map || {},
+      this._data = this.options.data || {},
+      this._style = {
+  		pulse:{
           radius: this.options.pulseRadius,
           borderWidth: this.options.pulseBorderWidth
         },
-        arc:
-        {
+        arc:{
           width: this.options.arcWidth,
           label: this.options.arcLabel,
           font: this.options.arcLabelFont
         }
-      } ||
-      {}, this._show = !0, this._init()
+      } || {},
+      this._show = !0,
+      this._init()
     },
-    _init: function ()
-    {
+    
+    _init: function () {
       var t = L.DomUtil.create("div", "leaflet-ODLayer-container")
       if (t.style.position = "absolute", t.style.width = this._map.getSize().x + "px", t.style.height = this._map.getSize().y + "px", this.container = t, this.canvas = document.createElement("canvas"), this.context = this.canvas.getContext("2d"), t.appendChild(this.canvas), this._map.getPanes().overlayPane.appendChild(t), !this.migration)
       {
@@ -287,15 +285,16 @@
         })
       }
     },
-    _resize: function ()
-    {
+    
+    _resize: function (){
       var i = this._map.getBounds(),
-        s = i.getNorthWest(),
-        a = this._map.latLngToContainerPoint(s)
+      s = i.getNorthWest(),
+      a = this._map.latLngToContainerPoint(s)
       a.y > 0 ? this.container.style.top = -a.y + "px" : this.container.style.top = "0px"
       var e = t.getComputedStyle(this._map.getContainer())
       this.canvas.setAttribute("width", parseInt(e.width, 10)), this.canvas.setAttribute("height", parseInt(e.height, 10))
     },
+    
     _convertData: function ()
     {
       var t = this._map.getBounds()

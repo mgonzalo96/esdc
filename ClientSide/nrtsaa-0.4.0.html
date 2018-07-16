@@ -20,6 +20,40 @@
 				margin:0px; padding:0px
 			}
 		
+			.header {
+			  overflow: hidden;
+			  background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+			  padding: 20px 10px;
+			}
+			.header a {
+			  float: left;
+			  color: black;
+			  text-align: center;
+			  padding: 12px;
+			  text-decoration: none;
+			  font-size: 18px; 
+			  line-height: 25px;
+			  border-radius: 4px;
+			}
+			
+			.header a.logo {
+			  font-size: 25px;
+			  font-weight: bold;
+			}
+
+			.header a:hover {
+			  background-color: #ddd;
+			  color: black;
+			}
+			.header a.active {
+			  background-color: dodgerblue;
+			  color: white;
+			}
+
+			.header-right {
+			  float: right;
+			}
+
 					
 			#top-title {
 				color:#FFF;
@@ -42,7 +76,7 @@
 			}	
 			
 			#map {
-				height:980px;
+				height:1000px;
 				width:100%;
 				z-index:1;
 			}
@@ -81,6 +115,7 @@
 			#timeStamp {
 				font-size:20px;
 				text-align:center;
+				float:center;
 				font-family: Segoe UI, sans-serif
 			}
 			
@@ -124,11 +159,17 @@
 	</head>
 	<body>
 		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
-		<div id="top-title">
-			<a href="https://www.cosmos.esa.int/"><img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/></a>
-			<div id="timeStamp">something goes wrong</div>
+		
+		<div class="header">
+		  <a href="https://www.cosmos.esa.int/"><img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="height:40px"/></a>
+		  <div id="timeStamp">something goes wrong</div>
+		  <div class="header-right">
+			<a class="active" href="#home">Home</a>
+			<a href="#about">About</a>
+		  </div>
 		</div>
 		<div id="map"></div>
+		<div id="icon-host-box">hello</div>
 		<div id="footer-title">
 			<div id="slide-control-legend">
 				<a>^</a>
@@ -136,7 +177,7 @@
 		</div>		
 			
 		<script>
-		$(window).on('load',function() // changed the position of this function
+		$(window).on('load', function() // changed the position of this function
 		{ 	
 		
 			var countHost = {};
@@ -193,6 +234,8 @@
 			L.control.layers(baseMaps).addTo(map);
 			
 			/**************   Generate a legend for the map   ***************/
+		
+			
 			var legend = L.control({position: 'bottomleft'});
 			
 			legend.onAdd = function (map)
@@ -208,13 +251,10 @@
 							 					'"><span class="dot">'+
 							 					(countHost[x] > 0 ? countHost[x] : "")+
 							 					'</span></i> ' + x.toString() + '<br>';
-							 					
 						} else div.innerHTML += '<i style="background:'+
 												ServerColor[x].toString()+
 							 					'"></i> ' + x.toString() + '<br>';				
 					}
-					
-					L.DomEvent.on(div.childNodes[0],'click', function(ev){map.setView([20,20]);});
 					
 					return div;
 			};
@@ -242,7 +282,7 @@
 			/**************   Shadow Polygon  ***************/
 			var t = L.terminator(
 			{
-				color:			'#00',
+				color:		 	'#00',
 				fillColor:	 	'#00',
 				fillOpacity:	0.3
 			});
@@ -275,32 +315,7 @@
 				//data3 = data;
 			}
 			
-			/**************   Restart the animation **************/
-			function play(){
-				migrationLayer.play();
-			}
-			
-			/**************   Pause the animation  ***************/
-			function pause(){
-				migrationLayer.pause();
-			}
-			
-			/**************   Control Play and Pause *************/
-			var flag=true;
-			map.on('click', function(e) {
-				if (flag)
-				{
-					pause();
-					setData();
-				} else {play();setData();}
-				flag=!flag;
-			});
-			
 			map.on('move', function(e) {
-			   setData();
-			});
-			
-			map.on('zoom', function(e) {
 			   setData();
 			});
 			
@@ -351,11 +366,13 @@
 					}
 				});
 			};
-			startSplunk();
-			setTimeout(startSplunk,2000);
-			setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms	
-								
-		});
+			
+			
+					
+					startSplunk();
+					setTimeout(startSplunk,2000);
+					setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms						
+			});
 				
 		</script>
 	</body>

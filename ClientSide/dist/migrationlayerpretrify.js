@@ -3,19 +3,18 @@
   var startX = -4.0;
   var startY = 40.0;
   var i = {
-      calculateColor: function (t, i)
-      {
-        if (0 === t.indexOf("#"))
-        {
+      calculateColor: function (t, i) {
+        if (0 === t.indexOf("#")) {
           var s = t.slice(1),
-            a = parseInt(s.slice(0, 2), 16),
-            e = parseInt(s.slice(2, 4), 16),
-            r = parseInt(s.slice(4), 16)
-          return "rgba(" + a + "," + e + "," + r + "," + i + ")"
+          a = parseInt(s.slice(0, 2), 16),
+          e = parseInt(s.slice(2, 4), 16),
+          r = parseInt(s.slice(4), 16);
+          return "rgba(" + a + "," + e + "," + r + "," + i + ")";
         }
-        return /^rgb\(/.test(t) ? t.replace(/rgb/, "rgba").replace(")", ",") + i + ")" : t.split(",").splice(0, 3).join(",") + i + ")"
+        return /^rgb\(/.test(t) ? t.replace(/rgb/, "rgba").replace(")", ",") + i + ")" : t.split(",").splice(0, 3).join(",") + i + ")";
       }
     },
+    
     s = {
       forEach: function (t, i, s)
       {
@@ -232,52 +231,49 @@
         this.playAnimation = !1
       }, i
     }()
+  
   L.MigrationLayer = L.Class.extend(
   {
     options:
     {
-      map:
-      {},
-      data:
-      {},
+      map:{},
+      data:{},
       pulseRadius: 25,
       pulseBorderWidth: 3,
       arcWidth: 1,
       arcLabel: !0,
       arcLabelFont: "15px sans-serif",
-      Marker:
-      {},
-      Spark:
-      {}
+      Marker:{},
+      Spark:{}
     },
-    _setOptions: function (t, i)
-    {
+    
+    _setOptions: function (t, i) {
       t.hasOwnProperty("options") || (t.options = t.options ? L.Util.create(t.options) :
       {})
       for (var s in i) t.options[s] = i[s]
       return t.options
     },
-    initialize: function (t)
-    {
-      this._setOptions(this, t), this._map = this.options.map ||
-      {}, this._data = this.options.data ||
-      {}, this._style = {
-        pulse:
-        {
+    
+    initialize: function (t){
+      this._setOptions(this, t),
+      this._map = this.options.map || {},
+      this._data = this.options.data || {},
+      this._style = {
+  		pulse:{
           radius: this.options.pulseRadius,
           borderWidth: this.options.pulseBorderWidth
         },
-        arc:
-        {
+        arc:{
           width: this.options.arcWidth,
           label: this.options.arcLabel,
           font: this.options.arcLabelFont
         }
-      } ||
-      {}, this._show = !0, this._init()
+      } || {},
+      this._show = !0,
+      this._init()
     },
-    _init: function ()
-    {
+    
+    _init: function () {
       var t = L.DomUtil.create("div", "leaflet-ODLayer-container")
       if (t.style.position = "absolute", t.style.width = this._map.getSize().x + "px", t.style.height = this._map.getSize().y + "px", this.container = t, this.canvas = document.createElement("canvas"), this.context = this.canvas.getContext("2d"), t.appendChild(this.canvas), this._map.getPanes().overlayPane.appendChild(t), !this.migration)
       {
@@ -290,15 +286,16 @@
         })
       }
     },
-    _resize: function ()
-    {
+    
+    _resize: function (){
       var i = this._map.getBounds(),
-        s = i.getNorthWest(),
-        a = this._map.latLngToContainerPoint(s)
+      s = i.getNorthWest(),
+      a = this._map.latLngToContainerPoint(s)
       a.y > 0 ? this.container.style.top = -a.y + "px" : this.container.style.top = "0px"
       var e = t.getComputedStyle(this._map.getContainer())
       this.canvas.setAttribute("width", parseInt(e.width, 10)), this.canvas.setAttribute("height", parseInt(e.height, 10))
     },
+    
     _convertData: function ()
     {
       var t = this._map.getBounds()

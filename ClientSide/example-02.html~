@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>ESDC Mapping and Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8">
+	<title>Migration Layer</title>
+	<link rel="stylesheet" href="./lib/leaflet.css" />
+	<script src="./lib/leaflet.js"></script>
+	<script src="./src/src.js"></script>
+	<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
+	<script src="./dist/migrationlayerpretrify.js"></script>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<style>
+		
+		html,body{
+			margin: 0;
+			padding: 0;
+		}
+		
+		#map{
+			position: absolute;
+			height: 800px;
+			width: 100%;
+			top:100px;
+			z-index:-1;
+			top:100px;
+		}
+		
+		#event{
+			z-index: 10000;
+	   		top: 500px;
+   		}
+		
+		.btn{
+			border-color:gray;
+			border-width: 2px;
+			background-color:white;
+		}
+		
+		.sticky{
+			background: linear-gradient(to right , #33060F, #5D040F );
+			height:100px;
+			position:sticky;
+			top:0px;
+			margin:0;
+			z-index:100;
+		}
+		
+		#header {
+			text-align: center;
+			font-size:20px;
+			font-family:Arial;
+			color:white;
+			padding:0px;
+			margin:0px;
+			
+		}
+		
+		li {
+			display:inline;
+		}
+		
+		footer{
+			position:relative;
+			height:50px;
+			background: linear-gradient(to right , #33060F, #5D040F );
+			buttom:0px;
+		}
+		
+	</style>
+</head>
+<body>
+	<div class="sticky">
+		<ul id="header">
+			<li>ESDC</li>
+			<li>ESAC</li>
+			<li>ESA</li>
+		</ul>
+	</div>
+	
+	<div id="event">
+		<input type="button" value="setData2" class="btn" onclick="setData2()">
+		<input type="button" value="setData3" class="btn" onclick="setData3()">
+		<input type="button" value="hide" class="btn" onclick="hide()">
+		<input type="button" value="show" class="btn" onclick="show()">
+		<input type="button" value="pause" class="btn" onclick="pause()">
+		<input type="button" value="play" class="btn" onclick="play()">
+		<input type="button" value="destroy" class="btn" onclick="destroy()">
+		<button style="bottom:0px;z-index:1">Call Splunkd</button>
+		<form id="temp" action="http://172.25.3.155:8123" method="get">	
+			<input type="text" placeholder="YYYY-MM-DDTHH:MM:SS.SSS" name="earliest" value="2018-05-28T16:00:00.000">earliest</input>
+			<input type="text" placeholder="YYYY-MM-DDTHH:MM:SS.SSS" name="latest" value="2018-05-28T16:55:0.000">latest</input>	
+			<input type="submit" value="Submit"></input>
+		</form>
+	</div>
+	<div id="map"></div>
+	
+	<script>
+		
+		
+		var dataTime = {earliest:"2018-05-28T16:00:00.000",latest:"2018-05-28T16:55:0.000"};
+		var data3 = [];
+			
+		var lrmap = L.map('map').setView([40.0, -4.0], 3);
+		
+		//'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+		//https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png
+		L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png').addTo(lrmap);
+		/*L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw')
+		.addTo(lrmap);*/
+		var data1 = [{"from":[-118.2705,33.9984],"to":[-122.789336,37.920458],"labels":["Los Angeles","San Francisco"],"color":"#ff3a31"},{"from":[-118.2705,33.9984],"to":[-80.247887,25.792296],"labels":[null,"Miami"],"color":"#ff7e2b"},{"from":[-118.2705,33.9984],"to":[-73.999705,40.795047],"labels":[null,"New York"],"color":"#ffc726"},{"from":[-118.2705,33.9984],"to":[-87.724088,41.917846],"labels":[null,"Chicago"],"color":"#e9ff20"},{"from":[-118.2705,33.9984],"to":[-92.145189,46.77372],"labels":[null,"Duluth"],"color":"#99ff1b"},{"from":[-118.2705,33.9984],"to":[-111.824547,40.788055],"labels":[null,"Salt Lake"],"color":"#45ff15"},{"from":[-118.2705,33.9984],"to":[-111.364615,47.536109],"labels":[null,"Great Falls"],"color":"#10ff33"},{"from":[-118.2705,33.9984],"to":[-97.585039,35.511099],"labels":[null,"Oklahoma"],"color":"#0aff84","host":"foo"},{"from":[-118.2705,33.9984],"to":[-115.157907,36.173032],"labels":[null,"Las Vegas"],"color":"#05ffd9","host":"foo"},{"to":[-103.196215,34.418753],"color":"000000","from":[-118.2705,33.9984],"labels":[null,"Clovis"]}];
+		
+		var data2=[{"from":[-4.10,40.10],"to":[-80.24785,25.792296],"labels":["Madrid","Miami"],"color":"#920521","host":"foo"},{"from":[0.0,0.0],"labels":[null,"Los Angeles"],"color":"#152894","to":[10,10]},{"from":[-4.0,40.0],"to":[-87.724088,41.917846],"labels":[null,"Chicago"],"color":"#920521"},{"from":[-4.0,40.0],"to":[-71.058437,42.35902],"labels":[null,"Boston"],"color":"#920521"},{"from":[-4.0,40.0],"to":[-75.683057,45.42172],"labels":[null,"Ottawa"],"color":"000000","host":"foo"}];
+		
+		var migrationLayer = new L.migrationLayer({
+			map: lrmap,
+			data: data2,
+			pulseRadius:6,
+			pulseBorderWidth:3,
+			arcWidth:1,
+			arcLabel:false,
+			arcLabelFont:'10px sans-serif',
+		});
+		
+		migrationLayer.addTo(lrmap);
+		
+		
+		
+		function hide(){
+			migrationLayer.hide();
+		}
+		
+		function show(){
+			migrationLayer.show();
+		}
+		
+		function play(){
+			migrationLayer.play();
+		}
+		
+		function pause(){
+			migrationLayer.pause();
+		}
+		
+		function destroy() {
+			migrationLayer.destroy();
+		}
+		function setData2(){
+			migrationLayer.setData(data1);
+		}
+		function setData3(){
+			migrationLayer.setData(data3);
+		}
+		//$('form').submit(function(ev){
+		
+		//}
+		//$('button').click(function()
+		$('button').click(function()
+		{
+			$.ajax(
+			{
+				url:"http://172.25.3.155:8123",
+				dataType: "text",
+				data: dataTime,
+				//contentType: "application/json; charset=utf-8", 
+				success:function(data)
+				{
+						
+					var geojson = JSON.parse(data);
+					var text;
+					for (var x in geojson.features)
+					{			
+						var ob = new Object();
+						ob = {"from":[-4.10,40.10],"to":[],"labels":[null,null],"color":"#FF4D4D"};
+						/*data3[x].to = [(geojson.features[x].geometry.coordinates[1])
+						,(geojson.features[x].geometry.coordinates[0])];*/
+						ob.to = [(geojson.features[x].geometry.coordinates[1])
+						,(geojson.features[x].geometry.coordinates[0])];
+						
+						data3.push(ob);													
+						//$('#div1').html(x.geometry.coordinates[0].toString());
+						//text+=(x + " <>" + geojson.features[x].geometry.coordinates[0]).toString() + 
+						//', ' + (geojson.features[x].geometry.coordinates[1]).toString()+data3[x].to+ob.to +'</br>';				
+						}
+						
+						//document.getElementById("div1").innerHTML = text;
+						
+						data3.forEach(function(val, index)
+						{
+							console.log(val,index);
+						});
+						
+						//$('#div1').html(data);
+						
+						function setData3(){
+						migrationLayer.setData(data3);
+						}							
+												
+					}
+			});
+	
+		});
+		
+	</script>
+	<div id="div1">
+        <h2>
+        Let jQuery AJAX Change This Text
+        </h2>
+    </div>
+	<!--<footer>
+      <p>Created by: M. Gonzalo</p>
+      <p>Contact information: <a href="mailto:zalvin_@hotmail.com">zalvin_@hotmail.com</a>.</p>
+    </footer>-->
+</body>
+</html>
+
+

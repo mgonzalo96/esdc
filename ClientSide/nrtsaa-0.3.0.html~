@@ -63,7 +63,7 @@
 				color: #555;
 			}
 			
-			.legend i {
+			.legend div {
 				width: 25px;
 				height: 12px;
 				float: left;
@@ -162,16 +162,27 @@
 			{
 					var div = L.DomUtil.create('div', 'info legend');
 					// loop through our ServerColor list and generate a label with a colored square for each Host		
+					
 					for (var x in ServerColor)
 					{			
-						div.innerHTML += '<i style="background:' + ServerColor[x].toString() +
-						 '"><span class="dot"></span></i> ' + x.toString() + '<br>';
+						div.innerHTML += '<div style="background:' + ServerColor[x].toString() +
+						 '"><div class="dot"></div></div> ' + x.toString() + '<br>';
 					}
+					alert(div.childNodes.length);
+					alert(div.childNodes[1].nodeName);
+					L.DomEvent.on(div.childNodes[0],'click', function(ev){map.setView([20,20]);});
+					div.childNodes[0].style.backgroundColor =  "black"; 
+					L.DomEvent.on(div.childNodes[6],'click', function(ev){map.setView([-10,10]);});
+					
+					
 					return div;
 			};
 			
 			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});
 			zoomHome.addTo(map);
+			
+			L.terminator().addTo(map);
+			
 			
 			/**************   Generate a legend for the map   ***************/				
 			

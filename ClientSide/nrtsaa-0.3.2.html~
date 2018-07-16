@@ -38,6 +38,7 @@
 				right: 0;
 				left: 0;
 				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				z-index:2;
 			}	
 			
 			#map {
@@ -48,25 +49,31 @@
 			
 
 			.info {
-				padding: 6px 8px;
-				font: 14px/16px  sans-serif; <!--Arial, Helvetica,-->
+				padding: 8px;
+				font: 14px  sans-serif; <!--Arial, Helvetica,-->
 				background: white;
-				background: rgba(255,255,255,0.7);
-				box-shadow: 0 0 15px rgba(0,0,0,0.5);
-				border-radius: 5px;
+				background: rgba(255,255,255,0.4);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2
 			}
 			
 			.legend {
-				line-height: 18px;
+				
+				line-height: 20px;
 				color: #555;
+				z-index:500;
+				position:fixed;
+				bottom:2px;
 			}
 			
 			.legend i {
+				
 				width: 50px;
 				height: 15px;
 				float: left;
-				margin-right: 8px;
-				opacity: 0.6;
+				margin-right: 15px;
+				opacity: 0.8;
 				position:relative;
 				border-radius: 2px;	
 			}
@@ -94,23 +101,44 @@
 				font-family: Segoe UI, sans-serif;
 				text-shadow: 0.5px 0.5px grey;
 				font-weight: normal;
-				font-style: normal;
-				
+				font-style: normal;			
 			}
+			
+			#slide-control-legend {
+				position:absolute;
+				left:40px;
+				top:5px;
+				background-color:red;
+				z-index:1500				
+			}
+			
+			#icon-host-box {
+				position:fixed;
+				top:50%;
+				left:20px;
+				z-index:3
+			}
+			
 			
 		</style>
 	</head>
 	<body>
 		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
 		<div id="top-title">
-			<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/>
-			<div id="timeStamp">foo</div>
+			<a href="https://www.cosmos.esa.int/"><img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/></a>
+			<div id="timeStamp">something goes wrong</div>
 		</div>
 		<div id="map"></div>
-		<div id="footer-title"></div>		
+		<div id="footer-title">
+			<div id="slide-control-legend">
+				<a>^</a>
+			</div>
+		</div>		
 			
 		<script>
-			
+		$(window).on('load',function() // changed the position of this function
+		{ 	
+		
 			var countHost = {};
 			var data3 = [];
 			var ServerColor = Object.freeze({
@@ -180,14 +208,25 @@
 							 					'"><span class="dot">'+
 							 					(countHost[x] > 0 ? countHost[x] : "")+
 							 					'</span></i> ' + x.toString() + '<br>';
+							 					
 						} else div.innerHTML += '<i style="background:'+
 												ServerColor[x].toString()+
 							 					'"></i> ' + x.toString() + '<br>';				
 					}
+					
+					L.DomEvent.on(div.childNodes[0],'click', function(ev){map.setView([20,20]);});
+					
 					return div;
 			};
 			
-			 
+			
+			$('#slide-control-legend').on('click', function()
+			{
+				$('.info.legend').slideToggle("slow");
+			});
+			
+			
+			$('#top-title').on('click',function(){alert('goo');});
 			
 			/**************   Home buton  ***************/
 			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});
@@ -203,7 +242,7 @@
 			/**************   Shadow Polygon  ***************/
 			var t = L.terminator(
 			{
-				color:		 	'#00',
+				color:			'#00',
 				fillColor:	 	'#00',
 				fillOpacity:	0.3
 			});
@@ -223,7 +262,7 @@
 			{
 				map: map,
 				data: data3,
-				pulseRadius:9,
+				pulseRadius:25,
 				pulseBorderWidth:2,
 				arcWidth:0,
 				arcLabel:false,
@@ -236,7 +275,32 @@
 				//data3 = data;
 			}
 			
+			/**************   Restart the animation **************/
+			function play(){
+				migrationLayer.play();
+			}
+			
+			/**************   Pause the animation  ***************/
+			function pause(){
+				migrationLayer.pause();
+			}
+			
+			/**************   Control Play and Pause *************/
+			var flag=true;
+			map.on('click', function(e) {
+				if (flag)
+				{
+					pause();
+					setData();
+				} else {play();setData();}
+				flag=!flag;
+			});
+			
 			map.on('move', function(e) {
+			   setData();
+			});
+			
+			map.on('zoom', function(e) {
 			   setData();
 			});
 			
@@ -246,7 +310,7 @@
 			{
 				return ServerColor[host];
 			};
-			
+			var callLegend = function(){legend.addTo(map);};
 			/***************** AJAX Request ***************/
 			var startSplunk = function()
 			{
@@ -283,18 +347,16 @@
 						
 						$('#timeStamp').text(new Date(Date.now()));							
 						setData();
-						legend.addTo(map);					
+						callLegend();					
 					}
 				});
 			};
-			
-			
-			$(window).on('load', function()
-			{ 		
-					startSplunk();
-					setTimeout(startSplunk,2000);
-					setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms						
-			});
+			startSplunk();
+			setTimeout(callLegend,1000);
+			setTimeout(startSplunk,2000);		
+			setInterval(startSplunk,60000);// 1' * 60" * 1000 ms = 60,000 ms	
+								
+		});
 				
 		</script>
 	</body>
