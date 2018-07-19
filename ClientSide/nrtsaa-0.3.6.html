@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<hmtl >
+	<head>
+		<title>NRTSAA-0.3.5</title>
+		<meta 	charset="utf-8">			
+		<meta 	name="viewport" content="width=device-width, initial-scale=1">
+		<link 	rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+		<link 	rel="stylesheet" href="./lib/leaflet.css"/>
+		<script src="./lib/leaflet.js"></script>
+		<script src="./src/src.js"></script>
+		<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
+		<script src="./dist/migrationlayerpretrify.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>	
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link 	rel="stylesheet" href="./dist/leaflet.zoomhome.css"/>
+		<script src="./dist/leaflet.zoomhome.js"></script>
+		<script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
+		<style>
+		
+			html, body {
+				margin:0px; padding:0px
+			}
+						
+			#top-title {
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 40px;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:30px;
+				padding:10px
+			}
+			
+			#footer-title {
+   				position: fixed;
+    			height: 20px;
+    			margin-top: 1em;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				z-index:2;
+			}	
+			
+			#map {
+				height:980px;
+				width:100%;
+				z-index:1;
+			}
+			
+
+			.info {
+				padding: 8px;
+				font: 14px  sans-serif; <!--Arial, Helvetica,-->
+				background: rgba(255,255,255,0.5);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2;
+			}
+			
+			.legend {				
+				line-height: 20px;
+				color: white;
+				font-weight:bold;
+				z-index:500;
+				position:fixed;
+				bottom:2px;
+				text-shadow: 1px 1px 3px black;
+			}
+			
+			.legend i {			
+				width: 50px;
+				height: 15px;
+				float: left;
+				margin-right: 20px;
+				opacity: 0.8;
+				position:relative;
+				border-radius: 2px;
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);	
+			}
+		
+			#timeStamp {
+				font-size:20px;
+				text-align:center;
+				font-family: Segoe UI, sans-serif
+			}
+			
+			.dot {
+				text-shadow: 1px 1px 1px black;
+				height: 18px;
+				background-color: red;
+				width:25px;
+				border-radius: 15%;
+				display: block;
+				text-align:center
+			}
+			
+			i span{
+				color: white;
+				font-size:12px;
+				text-align:center;
+				font-family: Segoe UI, sans-serif;
+				text-shadow: 0.5px 0.5px grey;
+				font-weight: normal;
+				font-style: normal;			
+			}
+			
+			#slide-control-legend {
+				position:absolute;
+				left:40px;
+				top:5px;
+				background-color:rgba(255,255,255,0.8);
+				z-index:1500;
+				height:20x;
+				width:20px;
+				border-radius:5px;
+				border:1px solid white					
+			}
+			
+			#icon-host-box {
+				position:fixed;
+				top:50%;
+				left:20px;
+				z-index:3
+			}
+			
+			.legend-container{
+				padding: 8px;
+				font: 14px  sans-serif; <!--Arial, Helvetica,-->
+				background: white;
+				background: rgba(255,255,255,0.4);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2
+			}
+			
+			#startMessage{
+				font: 14px  sans-serif;
+				position:fixed;
+				top:50%;
+				left:50%;
+				background-color:rgba(255,255,255,0.8);
+				height:30px;
+				width:200px;
+				z-index:2000;
+				color:black;
+				visibility: visible;
+				text-align:center;
+				line-height:30px;
+				border:1px solid grey;
+				border-radius: 5px;					
+			}
+			
+			#leg-cont>i:hover{
+				box-shadow: 0 0 3px rgba(0,0,0,0.9);
+			}
+			
+			.checker{
+				background:url(legend-icon.png);
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height:25px;
+				width:25px;
+				box-shadow: 0 0 3px rgba(0,0,0,0.9);
+				border-radius: 5px;
+			}
+			.checker:hover{background-color:grey;}
+			
+		</style>
+	</head>
+	<body>
+		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
+		<div id="top-title">
+			<a href="https://www.cosmos.esa.int/">
+			<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/>
+			</a>
+			<div id="timeStamp">something goes wrong</div>
+		</div>
+		<div id="startMessage">Starting ...</div>
+		<div id="map"></div>
+		<div id="footer-title">
+			<div id="slide-control-legend">
+				<a>+</a>
+			</div>
+		</div>		
+			
+		<script>
+		$(window).on('load',function() // changed the position of this function
+		{ 	
+			var dataNoGaia = [];
+			var countHost = [];
+			var data3 = [];
+			var ServerColor = Object.freeze({
+				Gaia:				'#01FF70',//'#0004FF',
+				Planck:				'#FFDC00',//'#13ADFB',
+				Cluster:			'#FF851B',//'#0A9C10',
+				Ulysses:			'#FF4136',//'#FDCF08',
+				ESASky:				'#85144b',//'#10115C',
+				ISSSolACES:			'#F012BE',//'#003C02',
+				VOSpace:			'#001f3f',//'#E868EF',
+				Soho:				'#0074D9',//'#19F821',
+				LisaPathfinder:		'#7FDBFF'//'#19F8EE'
+			});
+					
+			var hostArray =['Gaia','Planck','Cluster','Ulysses','ESASky','VOSpace','Soho','LisaPathfinder'];
+						
+			/*************************  Map Settings  ************************/
+			
+			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
+			{attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '
+			+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
+			+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
+				
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+			{attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});		
+			
+			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+			
+			var mapLink = '<a href="http://www.esri.com/">Esri</a>';
+        	var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+			var satelliteMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+			{attribution: '&copy; '+mapLink+', '+wholink,
+            maxZoom: 18,
+            });
+							
+			/*  
+				Global variable for our map. 
+				setView allows us to focus on Madrid (lat,lng)
+				with a specific zoom level 
+			*/			
+			var map = L.map('map', {
+    			center: 		[20, 0],
+				zoom: 			3,
+				layers: 		osmLayer,
+				zoomControl:	false
+			});
+
+			var baseMaps = {
+				"OSM": 				osmLayer,
+				"CARTO-Dark": 		baseMapDark,
+				"Black and Whilte":	blackAndWhite,
+				"Satellite Map": 	satelliteMap
+			};
+						
+			L.control.layers(baseMaps).addTo(map);
+			
+			/**************   Active and Deactive Gaia   ***************/
+			var checkGaia = L.control({position: 'topleft'});
+			checkGaia.onAdd = function(map)
+			{
+				var checker = L.DomUtil.create('div', 'checker');
+				var flag = true;
+				L.DomEvent.on(checker,'click', function()
+				{
+					if(flag){setData();flag=false;} else {setDataGaia();flag=true;}
+				},this);
+				return checker;
+			};
+					
+			/**************   Generate a legend for the map   ***************/
+			var legend = L.control({position: 'bottomleft'});
+			var hostListWithIP = [];
+			
+			legend.onAdd = function (map)
+			{
+				var diff = $(hostArray).not(hostListWithIP).get();
+				//alert(diff.length);
+				
+				var div = L.DomUtil.create('div', 'info legend');
+				div.setAttribute('id','leg-cont');
+				// loop through our ServerColor list and generate
+				//a label with a colored square for each Host					
+				for (var i = 0; i < hostListWithIP.length; i++)
+				{		
+									
+						div.innerHTML += 	'<i style="background:' +
+											ServerColor[countHost[i].host.toString()] +
+							 				'"><span class="dot">' +
+							 				countHost[i].count +
+							 				'</span></i> ' +
+							 				countHost[i].host.toString() +
+							 				'<br>';					
+												
+				}		
+				
+				for (var i = 0; i < diff.length; i++)
+				{		
+					div.innerHTML += 	'<i style="background:' +
+										ServerColor[diff[i].toString()] + 
+						 				'"></i> ' + diff[i].toString() +
+						 				'<br>';
+				}
+				
+				var j = 0;
+				var i= 0;		
+				var countClick =[];				
+				
+				/************   Make the Legend Interactive ***********/
+				function parseLatLng(arr)
+				{
+					map.setView(arr,5);
+				}			
+				
+				function initEvents() {
+					countHost.forEach( function(el)
+					{
+						j = i*3;
+						var index = el.count - 1;
+							L.DomEvent.on(div.childNodes[j],'click', function()
+							{
+								if (index > 0) {
+									parseLatLng([el.coordList[index][1],el.coordList[index][0]]);
+									index--;
+								} else 
+									{
+										parseLatLng([el.coordList[index][1],el.coordList[index][0]]);
+										index = el.count - 1;
+									}
+							});	
+						i++;			
+					});
+				}
+				
+				initEvents();
+				$('#startMessage').css("visibility","hidden");
+				return div;
+			};	
+			
+			
+			/**************   Slide Legend  ***************/
+			$('#slide-control-legend').on('click', function()
+			{
+				$('.info.legend').slideToggle("slow");
+			});
+			
+			/**************   Home buton  ***************/
+			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});			
+			zoomHome.addTo(map);
+			
+			
+			/**************   Scale Bar  ***************/
+			L.control.scale(
+			{
+				imperial:	false,
+				position:	'bottomright'
+			}).addTo(map);
+			
+			/**************   Shadow Polygon  ***************/
+			// global variable t: control the shadow over the map 
+			var t = L.terminator(
+			{
+				color:			'#00',
+				fillColor:	 	'#00',
+				fillOpacity:	0.3
+			});
+			
+			t.addTo(map);
+			// refresh the shadow every 0.5"
+			setInterval(function(){ updateTerminator(t)}, 500);
+			
+			function updateTerminator(t)
+			{
+			  var t2 = L.terminator();
+			  t.setLatLngs(t2.getLatLngs());
+			  t.redraw();
+			}			
+			
+			/****************  Migration Layer *******************/
+			// global variable migrationLayer: draw the dots within the map
+			var migrationLayer = new L.migrationLayer(
+			{
+				map: 				map,
+				data: 				data3,
+				pulseRadius:		25,
+				pulseBorderWidth:	2,
+				arcWidth:			0,
+				arcLabel:			false,
+				arcLabelFont:		'10px sans-serif',
+			});
+			
+			function setData()
+			{ 
+				migrationLayer.setData(dataNoGaia);
+			}
+			
+			function setDataGaia(){
+				migrationLayer.setData(data3);
+			}
+			
+			/**************   Restart the animation **************/
+			function play(){
+				migrationLayer.play();
+			}
+			
+			/**************   Pause the animation  ***************/
+			function pause(){
+				migrationLayer.pause();
+			}
+			
+			/**************   Hide the data  ***************/
+			function hide(){
+				migrationLayer.hide();
+			}
+			
+			/**************   Show the data  ***************/
+			function show(){
+				migrationLayer.show();
+			}
+			/**************   Control Play and Pause ***********/
+			/*var flag = true;
+			map.on('click', function(e) {
+				if (flag)
+				{
+					setData();
+				} else 
+				{
+					setDataGaia();
+				}
+				flag=!flag;
+			});*/
+			
+			map.on('move', function(e) {
+			   setDataGaia();
+			});
+			
+			map.on('zoom', function(e) {
+			   setDataGaia();
+			});
+											
+			var pickColor = function(host)
+			{
+				return ServerColor[host];
+			};
+			
+			var callLegend = function()
+			{
+				legend.addTo(map);
+				checkGaia.addTo(map);
+			};
+			
+			/***************** AJAX Request ***************/
+			// global variable startSplunk: make a call to the server
+			var startSplunk = function()
+			{
+				var indexPreHost = 0;
+				var indexPostHost = 1;
+				
+				$.ajax(
+				{
+					url:"http://172.25.3.155:8123",
+					dataType: "text",
+					success: function(data)
+					{
+						var geojson = JSON.parse(data);
+						data3 = [];
+						countHost = [];
+						hostListWithIP = [];
+						var it = 0;
+						for (var x in geojson.features)
+						{		
+							it++;	
+							var ob = {};
+							ob = {"from":[-4.10,40.10],"to":[],"labels":[null,null]};
+												
+							var currentHost = geojson.features[x].properties.host.toString();
+							
+						//	alert(it+ " -- " + indexPreHost);
+						//	alert(currentHost);	
+							
+							var found = countHost.some(function(el)
+							{
+								return el.host === currentHost;
+							});			
+								
+							if (!found && indexPreHost != indexPostHost)
+							{
+						//		alert('1st if: ' + indexPreHost);
+								
+								countHost.push({"host": currentHost.toString(), "count":1, "coordList":
+									new Array([(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])])}
+								);
+								hostListWithIP.push(currentHost);
+								
+							//	alert('countif: ' + countHost[indexPreHost].count);
+							//	alert('num of coords: ' + countHost[indexPreHost].coordList[0]);
+							//	alert('num of coords: ' + countHost[indexPreHost].coordList.length);
+								indexPostHost--;
+								
+							} else if (!found && indexPreHost == indexPostHost)
+							{
+								indexPreHost++;
+								//alert('1st if: ' + indexPreHost);
+								
+								countHost.push({"host": currentHost.toString(), "count":1, "coordList":
+									new Array([(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])])}
+								);
+								hostListWithIP.push(currentHost);
+								
+								//alert('countif: ' + countHost[indexPreHost].count);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList[0]);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList.length);
+								indexPostHost++;
+																
+							} else {
+						//		alert('1st else: ' + indexPreHost);
+								countHost[indexPreHost].count = countHost[indexPreHost].count + 1;
+								countHost[indexPreHost].coordList.push(
+									[(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])]
+								);
+								//alert('countelse: ' + countHost[indexPreHost].count);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList.length);					
+							}				
+					
+						ob.color = pickColor(geojson.features[x].properties.host.toString());		
+						ob.to = [(geojson.features[x].geometry.coordinates[1])
+						,(geojson.features[x].geometry.coordinates[0])];
+						//new feature
+						ob.host = geojson.features[x].properties.host.toString();			
+						data3.push(ob);
+						dataNoGaia = _.filter(data3,function(e){return e.host != "Gaia";});
+												
+						}
+						
+						/*for (var i=0;i<hostListWithIP.length;i++)
+						{
+							alert(countHost[i].host +
+							"<>" +countHost[i].count);
+						}*/
+						//alert(dataNoGaia.length);
+						
+						$('#timeStamp').text(new Date(Date.now()));
+		
+					}
+				});
+			};		
+			startSplunk();
+			setTimeout(startSplunk,7000);
+			setTimeout(setDataGaia,12000);
+			setTimeout(callLegend,12000);
+			setInterval(startSplunk,310000);
+			setInterval(setDataGaia,315000);
+			setInterval(callLegend,315000);// 5' * 60" * 1000 ms = 300,000 ms								
+		});
+				
+		</script>
+	</body>
+</html>
