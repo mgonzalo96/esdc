@@ -2,6 +2,7 @@
 {
   var startX = -4.0;
   var startY = 40.0;
+  //variable i
   var i = {
       calculateColor: function (t, i) {
         if (0 === t.indexOf("#")) {
@@ -14,7 +15,7 @@
         return /^rgb\(/.test(t) ? t.replace(/rgb/, "rgba").replace(")", ",") + i + ")" : t.split(",").splice(0, 3).join(",") + i + ")";
       }
     },
-    
+    //variable s
     s = {
       forEach: function (t, i, s)
       {
@@ -29,17 +30,41 @@
         return a
       }
     },
+    //variable a
     a = function ()
     {
       var t = function (t)
       {
-        this.x = t.x, this.y = t.y, this.rotation = t.rotation, this.style = t.style, this.color = t.color, this.size = t.size, this.borderWidth = t.borderWidth, this.borderColor = t.borderColor
+        this.x = t.x,
+        this.y = t.y,
+        this.rotation = t.rotation,
+        this.style = t.style,
+        this.color = t.color,
+        this.size = t.size,
+        this.borderWidth = t.borderWidth,
+        this.borderColor = t.borderColor
       }
       return t.prototype.draw = function (t)
       {
-        t.save(), t.translate(this.x, this.y), t.rotate(this.rotation), t.lineWidth = this.borderWidth || 0, t.strokeStyle = this.borderColor || "#000", t.fillStyle = this.color || "#000", t.beginPath(), "circle" === this.style ? t.arc(0, 0, this.size, 0, 2 * Math.PI, !1) : "arrow" === this.style && (t.moveTo(-this.size, -this.size), t.lineTo(this.size, 0), t.lineTo(-this.size, this.size), t.lineTo(-this.size / 4, 0), t.lineTo(-this.size, -this.size)), t.closePath(), t.stroke(), t.fill(), t.restore()
+        t.save(),
+        t.translate(this.x, this.y),
+        t.rotate(this.rotation),
+        t.lineWidth = this.borderWidth || 0,
+        t.strokeStyle = this.borderColor || "#000",
+        t.fillStyle = this.color || "#000",
+        t.beginPath(),
+        "circle" === this.style ? t.arc(0, 0, this.size, 0, 2 * Math.PI, !1) : "arrow" === this.style && (t.moveTo(-this.size, -this.size),
+         t.lineTo(this.size, 0),
+         t.lineTo(-this.size, this.size),
+         t.lineTo(-this.size / 4, 0),
+         t.lineTo(-this.size, -this.size)),
+         t.closePath(),
+         t.stroke(),
+         t.fill(),
+         t.restore()
       }, t
     }(),
+    //variable e
     e = function ()
     {
       var t = function (t)
@@ -57,7 +82,20 @@
           c = Math.sqrt(Math.pow(r / 2, 2) + Math.pow(r * h, 2)),
           p = Math.atan2(s - d, i - l),
           u = Math.atan2(e - d, a - l)
-        this.startX = i, this.startY = s, this.endX = a, this.endY = e, this.centerX = l, this.centerY = d, this.startAngle = p, this.endAngle = u, this.startLabel = t && t.labels && t.labels[0], this.endLabel = t && t.labels && t.labels[1], this.radius = c, this.lineWidth = t.width || 1, this.strokeStyle = t.color || "#000", this.label = t.label, this.font = t.font, this.shadowBlur = t.shadowBlur
+        this.startX = i,
+        this.startY = s,
+        this.endX = a,
+        this.endY = e,
+        this.centerX = l,
+        this.centerY = d,
+        this.startAngle = p,
+        this.endAngle = u,
+        this.startLabel = t && t.labels && t.labels[0],
+        this.endLabel = t && t.labels && t.labels[1],
+        this.radius = c, this.lineWidth = t.width || 1,
+        this.strokeStyle = t.color || "#000", this.label = t.label,
+        this.font = t.font,
+        this.shadowBlur = t.shadowBlur
       }
       return t.prototype.draw = function (t)
       {
@@ -79,6 +117,7 @@
         t.restore()
       }, t
     }(),
+    //variable r
     r = function ()
     {
       function t(t)
@@ -93,6 +132,7 @@
         a = i.calculateColor(a, 1 - this.r / this.maxRadius), t.strokeStyle = a, t.shadowBlur = this.shadowBlur, t.shadowColor = a, t.lineWidth = this.lineWidth, t.beginPath(), t.arc(0, 0, this.r, 0, 2 * Math.PI, !1), t.stroke(), t.restore(), Math.abs(this.maxRadius - this.r) < .8 && (this.r = 0)
       }, t
     }(),
+    //variable o
     o = function ()
     {
       var t = function (t)
@@ -140,6 +180,7 @@
         t.save(), t.translate(this.centerX, this.centerY), this.marker.x = Math.cos(this.trailAngle) * this.radius, this.marker.y = Math.sin(this.trailAngle) * this.radius, this.marker.rotation = this.trailAngle + Math.PI / 2, this.marker.draw(t), t.restore(), 180 * (s - this.trailAngle) / Math.PI < .5 && (this.trailAngle = this.startAngle, this.animateBlur = !1)
       }, t
     }(),
+    //variable e
     n = function ()
     {
       var i = function (t)
@@ -154,20 +195,26 @@
       return i.prototype.init = function ()
       {
         this.updateData(this.data)
-      }, i.prototype.add = function (t) {}, i.prototype.remove = function () {}, i.prototype.clear = function ()
-      {
-        this.store = {
-          arcs: [],
-          markers: [],
-          pulses: [],
-          sparks: []
-        }, this.playAnimation = !0, this.started = !1, t.cancelAnimationFrame(this.requestAnimationId)
-      }, i.prototype.updateData = function (t)
+      }, i.prototype.add = function (t) {},
+      	i.prototype.remove = function () {},
+      	i.prototype.clear = function ()
+        {
+        	this.store = {
+          		arcs: [],
+          		markers: [],
+          		pulses: [],
+          		sparks: []
+        	},
+        	this.playAnimation = !0,
+        	this.started = !1,
+        	t.cancelAnimationFrame(this.requestAnimationId)
+        },
+      i.prototype.updateData = function (t)
       {
         t && 0 !== t.length && (this.clear(), this.data = t, this.data && this.data.length > 0 && s.forEach(this.data, function (t)
         {
           var i = new e(
-            {
+          {
               startX: -4.0,
               startY: 40.0,
               endX: t.to[0],
@@ -352,9 +399,11 @@
       var t = this._map.getBounds()
       if (t && this.migration.playAnimation)
       {
-        this._resize(), this._transform()
-        var i = this._convertData()
-        this.migration.updateData(i), this.migration.start(this.canvas)
+        this._resize(),
+        this._transform()
+        var i = this._convertData();
+        this.migration.updateData(i),
+        this.migration.start(this.canvas)
       }
     },
     setData: function (t)
@@ -363,11 +412,13 @@
     },
     hide: function ()
     {
-      this.container.style.display = "none", this._show = !1
+      this.container.style.display = "none",
+      this._show = !1
     },
     show: function ()
     {
-      this.container.style.display = "", this._show = !0
+      this.container.style.display = "",
+      this._show = !0
     },
     play: function ()
     {
@@ -379,9 +430,14 @@
     },
     destroy: function ()
     {
-      this.migration.clear(), this.container.parentNode.removeChild(this.container), this._map.clearAllEventListeners(), this.mapHandles = []
+      this.migration.clear(),
+      this.container.parentNode.removeChild(this.container),
+      this._map.clearAllEventListeners(),
+      this.mapHandles = []
     }
-  }), L.migrationLayer = function (t)
+  }),
+  
+  L.migrationLayer = function (t)
   {
     return new L.MigrationLayer(t)
   }

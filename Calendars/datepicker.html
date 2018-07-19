@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>jQuery UI Datepicker - Default functionality</title>
+		<link rel="stylesheet" href="https//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="/resources/demos/style.css">
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<style>
+			span {
+				display:inline;
+			}
+		</style>
+		<script>
+			$( function() {
+			
+					
+			$( "#earliestDate" ).datepicker({yearRange:"2018:2018"});
+			$( "#latestDate" ).datepicker();
+						
+			$.datepicker.formatDate( "@", new Date( 2007, 1 - 1, 26 ) );
+			
+			$("#getSpanTime").click(function(ev)
+			{
+				var lDate = $( "#latestDate" ).datepicker( "getDate" );
+				var eDate = $( "#earliestDate" ).datepicker( "getDate" );
+				$("#dateText").html(eDate +"<br>"+ lDate);
+			});
+
+			
+			} );
+		</script>
+	</head>
+	<body>
+		<span>earliest date: <input type="text" id="earliestDate"></span>
+		<span>latest date: <input type="text" id="latestDate"></spap>
+		<span><input type="button" value="Click me" id="getSpanTime"></input></span>
+		<p id="dateText"></p>
+		
+	</body>
+</html>

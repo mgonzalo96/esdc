@@ -1,0 +1,5 @@
+host="gea03.n1data.lan" 
+| rename clientip as ip 
+| stats count by ip 
+| search NOT [inputlookup append=t robots.csv 
+| fields ip]

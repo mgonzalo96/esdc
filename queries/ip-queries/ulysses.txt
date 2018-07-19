@@ -31,3 +31,11 @@ host="ufa.esac.esa.int" sourcetype="access_combined"
 | rex field=_raw "(?<clientip>[[octet]]\.[[octet]]\.[[octet]]\.[[octet]])\"" 
 | iplocation clientip 
 | table  lat lon Country clientip ]
+
+/////////////////////////////////////
+
+host="ufa.esac.esa.int"
+| eval foo = if(match(_raw , "GET /ufa-sl-server"), 1, 0)
+| iplocation clientip
+| search City != ""
+| table foo clientip host Country City _time

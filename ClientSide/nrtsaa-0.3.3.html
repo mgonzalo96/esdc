@@ -380,10 +380,11 @@
 			function setData()
 			{ 
 				migrationLayer.setData(dataNoGaia);
-				//data3 = data;
 			}
 			
-			function setDataGaia(){migrationLayer.setData(data3);}
+			function setDataGaia(){
+				migrationLayer.setData(data3);
+			}
 			
 			/**************   Restart the animation **************/
 			function play(){
@@ -410,16 +411,19 @@
 				if (flag)
 				{
 					setData();
-				} else {setDataGaia();}
+				} else 
+				{
+					setDataGaia();
+				}
 				flag=!flag;
 			});
 			
 			map.on('move', function(e) {
-			   setData();
+			   setDataGaia();
 			});
 			
 			map.on('zoom', function(e) {
-			   setData();
+			   setDataGaia();
 			});
 											
 			var pickColor = function(host)
@@ -525,7 +529,7 @@
 						//alert(dataNoGaia.length);
 						
 						$('#timeStamp').text(new Date(Date.now()));							
-						setData();
+						setDataGaia();
 						callLegend();
 						command.addTo(map);			
 					}
