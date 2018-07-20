@@ -32,7 +32,6 @@
 				position:fixed;
 				top:150px;
 				right:40%;
-				width: 300px;
     			padding: 12px 20px;
 				margin: 8px 0;
 				display: block;
@@ -42,7 +41,7 @@
 				font-family:sans-serif;
 				visibility:hidden;
 				z-index:100;
-				background:white;
+				background:rgba(255,255,255,0.9);
 			}
 			
 			#top-title {
@@ -138,20 +137,34 @@
 		</div>
 			<div id="checkbox">
 				<!--checked="checked"-->
-				<label class="container">Gaia</label>
-		  		<input type="checkbox" name="host" value="gea03.n1data.lan">				
-				<label class="container">Esasky</label>
-		  		<input type="checkbox" name="host" value="ammiapp02">
-				<label class="container">Vospace</label>
-		  		<input type="checkbox" name="host" value="vospace.n1data.lan">
-		  		<label class="container">Lisa PathFinder</label>
-		  		<input type="checkbox" name="host" value="lpfsa.n1data.lan">
-		  		<label class="container">ISS-SolACES</label>
-		  		<input type="checkbox" name="host" value="vospace.n1data.lan">
-		  		<label class="container">PLA</label>
-		  		<input type="checkbox" name="host" value="pla">
-		  		<label class="container">SSA</label>
-		  		<input type="checkbox" name="host" value="ssa.esac.esa.int">
+				<div>
+					<label style="display:inline;left:0px" class="container">Gaia</label>
+		  			<input style="display:inline;right:0px" type="checkbox" name="host" value="gea03.n1data.lan">								
+				</div>
+				<div>
+					<label style="display:inline;left:0px" class="container">Esasky</label>
+					<input style="display:inline;right:0px" type="checkbox" name="host" value="ammiapp02">
+				</div>
+			  	<div>	
+					<label style="display:inline;left:0px" class="container">Vospace</label>
+			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="vospace.n1data.lan">
+			  	</div>
+			  	<div>	
+			  		<label style="display:inline;left:0px" class="container">Lisa PathFinder</label>
+			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="lpfsa.n1data.lan">
+			  	</div>
+			  	<div>	
+			  		<label style="display:inline;left:0px" class="container">ISS-SolACES</label>
+			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="isssolac.n1data.lan">
+			  	</div>
+			  	<div>	
+			  		<label style="display:inline;left:0px" class="container">PLA</label>
+			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="pla">
+			  	</div>
+			  	<div>	
+			  		<label style="display:inline;left:0px" class="container">SSA</label>
+			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="ssa.esac.esa.int">
+			  	</div>	
 			</div>
 		<div id="map"></div>
 		<div id="footer-title"></div>				
@@ -194,7 +207,7 @@
 			writeDate(start,end);
 			
 			
-			/**************************  Map Settings  ************************************/
+			/***************  Map Settings  ****************/
 			
 			var geojson = {
 				"type": "FeatureCollection",
@@ -281,11 +294,9 @@
 				timeSliderDragUpdate: 	true
 			}			
 			
-			var timeDimensionControl = new L.Control.TimeDimension(timeDimensionControlOptions);
-			
+			var timeDimensionControl = new L.Control.TimeDimension(timeDimensionControlOptions);		
 			map.addControl(timeDimensionControl);
-			
-			
+						
 			L.TimeDimension.Layer.GeoJson.GeometryCollection = L.TimeDimension.Layer.GeoJson.extend({
 
 				// Do not modify features. Just return the feature if it intersects
@@ -399,9 +410,10 @@
 			
 			$("#splunk").click(function()
 			{
+				alert(Object.keys(dataParams));
 				$.ajax(
 				{
-					url:"http://172.25.3.155:8123",
+					url:"http://172.25.3.155:8122",
 					dataType: "text",
 					data: dataParams,
 					success: function(data)
