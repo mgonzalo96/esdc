@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <hmtl >
 	<head>
-		<title>NRTSAA-0.3.5</title>
+		<title>NRTSAA-0.3.6</title>
 		<meta 	charset="utf-8">			
 		<meta 	name="viewport" content="width=device-width, initial-scale=1">
 		<link 	rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
 		<link 	rel="stylesheet" href="./lib/leaflet.css"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
 		<script src="./lib/leaflet.js"></script>
 		<script src="./src/src.js"></script>
 		<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
@@ -24,16 +25,15 @@
 			#top-title {
 				color:#FFF;
 				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
-				height: 40px;
+				height: 8%;
 				box-shadow: 0px 4px 6px -6px #000;
 				font-size:30px;
-				padding:10px
+				padding:15px
 			}
 			
 			#footer-title {
    				position: fixed;
-    			height: 30px;
-    			margin-top: 1em;
+    			height: 3%;
 				bottom: 0;
 				right: 0;
 				left: 0;
@@ -42,7 +42,7 @@
 			}	
 			
 			#map {
-				height:980px;
+				height:1080px;
 				width:100%;
 				z-index:1;
 			}
@@ -78,8 +78,8 @@
 				box-shadow: 0 0 15px rgba(0,0,0,0.7);	
 			}
 		
-			#timeStamp {
-				font-size:20px;
+			.timeStamp {
+				font-size:14px;
 				text-align:center;
 				font-family: Segoe UI, sans-serif
 			}
@@ -199,7 +199,9 @@
 			<a href="https://www.cosmos.esa.int/">
 			<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/>
 			</a>
-			<div id="timeStamp">something goes wrong</div>
+			<div class="timeStamp" >ACCESSES TO ESAC SCIENCE DATA CENTER (ESDC) BETWEEN :</div>
+			<div class="timeStamp" id="dateNow">something goes wrong</div>
+			<div class="timeStamp" id="dateBefore">something goes wrong</div>
 		</div>
 		<div id="startMessage">Starting ...</div>
 		<div id="map"></div>
@@ -212,7 +214,7 @@
 			</div>
 		</div>		
 			
-		<script>
+		<script type="text/javascript">
 		$(window).on('load',function() // changed the position of this function
 		{ 	
 			// variable storing data without Gaia
@@ -571,19 +573,21 @@
 							"<>" +countHost[i].count);
 						}*/
 						//alert(dataNoGaia.length);
-						
-						$('#timeStamp').text(new Date(Date.now()));
+						var dateNowms = new Date(Date.now());
+						var fiveBefore = dateNowms - 300000;
+						$('#dateNow').text(new Date(dateNowms));
+						$('#dateBefore').text(new Date(fiveBefore));
 		
 					}
 				});
 			};		
 			startSplunk();
-			setTimeout(startSplunk,5000);
-			setTimeout(setDataGaia,10000);
-			setTimeout(callLegend,10000);
-			setInterval(startSplunk,310000);
-			setInterval(setDataGaia,315000);
-			setInterval(callLegend,315000);// 5' * 60" * 1000 ms = 300,000 ms								
+			setTimeout(startSplunk,2000);
+			setTimeout(setDataGaia,4000);
+			setTimeout(callLegend,4500);
+			setInterval(startSplunk,60000);
+			setInterval(setDataGaia,33000);
+			setInterval(callLegend,33500);// 5' * 60" * 1000 ms = 300,000 ms								
 		});
 				
 		</script>

@@ -17,6 +17,7 @@
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
         <script type="text/javascript" src="https://cdn.rawgit.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
         <script type="text/javascript" src="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.min.js"></script>
+        <script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 		<style>
 		
@@ -45,12 +46,11 @@
 			}
 			
 			#top-title {
-				display:block;
 				color:#FFF;
 				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
-				height: 100px;
+				height: 80px;
 				box-shadow: 0px 4px 6px -6px #000;
-				font-size:30px;
+				font-size:20px;
 				text-align: center;
 			}
 			
@@ -93,22 +93,6 @@
 				text-align: center;
 			}
 			
-			#userControl input[type=button] {
-				width: 120px;
-				background-color: #4CAF50;
-				color: white;
-				padding: 14px 20px;
-				margin: 8px 0;
-				border: none;
-				border-radius: 4px;
-				cursor: pointer;
-				
-			}
-			
-			input[type=button]:hover {
-				background-color: #45a049;
-			}
-			
 			#output {
 				background-color: lightblue;
 				width: 320px;
@@ -116,14 +100,78 @@
 				overflow: scroll;
 			}
 			
-			
+			.my-div-icon
+				{
+				  background-color:rgba(255,0,0,0.5);
+				  border:2px solid rgba(255,0,0,0.3);
+				  color:blue;
+				  font-weight:bold;
+				  text-align:center;
+				  border-radius:50%;
+				  line-height:30px;
+				}
+				
+			.dropbtn {
+				background-color: #4CAF50;
+				color: white;
+				padding: 10px;
+				font-size: 14px;
+				border: none;
+				cursor: pointer;
+				border-radius:4px;
+				width:140px;
+			}
+
+			.dropbtn:hover, .dropbtn:focus {
+				background-color: #3e8e41;
+			}
+
+			#myInput {
+				border-box: box-sizing;
+				background-image: url('searchicon.png');
+				background-position: 14px 12px;
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				font-size: 12px;
+				padding: 14px 20px 12px 45px;
+				border: none;
+				border-bottom: 1px solid #ddd;
+			}
+
+			#myInput:focus {outline: 3px solid #ddd;}
+
+			.dropdown {
+				position: relative;
+				display: inline-block;
+			}
+
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: #f6f6f6;
+				min-width: 150px;
+				overflow: auto;
+				border: 1px solid #ddd;
+			}
+
+			.dropdown-content a {
+				font-family:sans serif;
+				font-size:14px;
+				color: black;
+				padding: 12px 16px;
+				text-decoration: none;
+				display: block;
+			}
+
+			.dropdown a:hover {background-color: #ddd;}
+
+			.show {display: block;z-index:5000;}
+
 		</style>
 	</head>
 	<body>
 		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
 		<div id="top-title">
-			<span>ESA</span>
-			<span>NRTSAA</span>
 			<div id="calendar">	
 				<input id="timeInput" type="text" name="datetimes" value=""></input>
 				<p id="earliestDate"></p>
@@ -131,9 +179,22 @@
 			</div>		
 		</div>
 		<div id="userControl">
-			<input type="button" id="splunk" value="Call Splunkd"></input>
-			<input type="button" value="setData" class="btn" onclick="setData()"></input>	
-			<input type="button" class="hide" value="Select the Host(s):"><span></span></input>
+			<input type="button" id="splunk" class="dropbtn" value="SUBMIT"></input>
+			<input type="button" class="hide dropbtn" value="HOST SELECTOR"><span></span></input>		
+			<div class="dropdown">
+				<button id="dropMenu" class="dropbtn">SID SELECTOR</button>
+				  <div id="myDropdown" class="dropdown-content">
+					<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+					<a href="#about">SID 100000</a>
+					<a href="#base">SID 100000</a>
+					<a href="#blog">SID 100000</a>
+					<a href="#contact">SID 100000</a>
+					<a href="#custom">SID 100000</a>
+					<a href="#support">SID 100000</a>
+					<a href="#tools">SID 100000</a>
+				  </div>
+			</div>
+		
 		</div>
 			<div id="checkbox">
 				<!--checked="checked"-->
@@ -169,7 +230,40 @@
 		<div id="map"></div>
 		<div id="footer-title"></div>				
 		<script>
-		$(function(){
+		$(window).on('load',function() // changed the position of this function
+		{
+			/* When the user clicks on the button,
+			toggle between hiding and showing the dropdown content */
+			$("#dropMenu").click(function()
+			{
+				myFunction();
+			});
+			
+			function myFunction()
+			{
+				document.getElementById("myDropdown").classList.toggle("show");
+			}
+			
+			$("#myInput").keyup(function()
+			{
+				filterFunction();
+			});
+			
+			function filterFunction() {
+				var input, filter, ul, li, a, i;
+				input = document.getElementById("myInput");
+				filter = input.value.toUpperCase();
+				div = document.getElementById("myDropdown");
+				a = div.getElementsByTagName("a");
+				for (i = 0; i < a.length; i++) {
+					if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+						a[i].style.display = "";
+					} else {
+						a[i].style.display = "none";
+					}
+				}
+			}
+		
 			
 			var dataParams = {earliest:"",latest:""};
 			var start = moment().subtract(29, 'days');
@@ -207,8 +301,7 @@
 			writeDate(start,end);
 			
 			
-			/***************  Map Settings  ****************/
-			
+			/***************  Data Hardcoded  *****
 			var geojson = {
 				"type": "FeatureCollection",
 				"features": [{
@@ -242,8 +335,9 @@
 						"time": 1528102771000
 					}
 				}]
-			};
-			
+			};***********/
+			var geojson = {};
+			/***************  Map Settings  ****************/
 			/*  
 				Global variable for our map. 
 				setView allows us to focus on Madrid (lat,lng)
@@ -256,22 +350,44 @@
 			});		
 			
 			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
-			
-			baseMapDark.addTo(map);
+	
 				
-			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
-			
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});	
 			
 			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+			
+			var mapLink = '<a href="http://www.esri.com/">Esri</a>';
+        	var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+			var satelliteMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+			{attribution: '&copy; '+mapLink+', '+wholink,
+            maxZoom: 18,
+            });
+			
+			satelliteMap.addTo(map);
 							
 			var baseMaps = {
+				"Satellite Map": 	satelliteMap,
 				"CARTO-Dark":		baseMapDark,
 				"OSM": 				osmLayer,		
-				"Black and Whilte":	blackAndWhite
+				"Black and Whilte":	blackAndWhite		
 			};		
 			
 			L.control.layers(baseMaps).addTo(map);	
 			
+			/**************   Shadow Polygon  ******
+			var timeShadow = {time:0};
+			// global variable t: control the shadow over the map 
+			var t = L.terminator(
+			{
+				color:			'#00',
+				fillColor:	 	'#00',
+				fillOpacity:	0.3
+			});
+			
+			t.addTo(map);*********/
+
+			
+			/**************   Time Dimension  ***************/
 			var timeDimension = new L.TimeDimension({});
 			
 			map.timeDimension = timeDimension; 
@@ -317,78 +433,22 @@
 
 					if (featureTimes[0] > maxTime || featureTimes[l - 1] < minTime) {
 						return null;
-					}
+					}					
 					return feature;
 				},
 
 			});
-
-			L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
-			{
-				return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
-			};
-
+		
+			/*
+			var icon = L.icon({
+				iconUrl: 'play.png',
+				iconSize: [22, 22],
+				iconAnchor: [5, 25]
+			});*/
 			
-			var geoJsonLayer = L.geoJson(geojson, {
-			  style: function (feature) {    
-				return {
-				  "color":		"#FF0000",
-				  "weight":		2,
-				  "opacity":	0.4
-				};
-			  }
-			});
-			
-			var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
-			  updateTimeDimension: 		true,
-			  updateTimeDimensionMode:	'replace',  
-			  duration:					'PT30M',
-			});
-			
-			geoJsonTimeLayer.addTo(map);
-			
-			
+			var myIcon = L.divIcon({className: 'my-div-icon'});
 			
 			/*****************************************************************
-
-			var data = [{"from":[-4.10,40.10],"to":[-4.0,40.0],"labels":[null,null],"color":"#106090"}];
-			
-			var migrationLayer = new L.migrationLayer(
-			{
-				map: map,
-				data: data,
-				pulseRadius:6,
-				pulseBorderWidth:3,
-				arcWidth:1,
-				arcLabel:false,
-				arcLabelFont:'10px sans-serif',
-			});
-			
-			function setData()
-			{ 
-				migrationLayer.setData(data3);
-				data3 = data
-			}		
-			
-			var dataStr;
-			var data3 = [];
-			function getParams() 
-			{
-				dataParams.earliest = document.getElementById('eT').value;
-				dataParams.latest = document.getElementById('lT').value;
-				$('#checkbox input:checked').each(function()
-				{
-					dataParams.host.push($(this).attr('value'));
-				});
-				
-				console.log(dataParams);
-				dataStr = JSON.stringify(dataParams);
-				console.log(dataStr);
-			}
-			
-			var subButton = document.getElementById('subButton');
-			subButton.addEventListener('click', getParams, false);
-			
 			*****************************************************************/
 			
 			$(".hide").click(function()
@@ -399,14 +459,7 @@
 				$("#checkbox").css({"visibility":"hidden"});			
 			});		
 			
-
-			
 			/********************  AJAX REQUEST  ****************************/
-			
-			/* host=gea03.n1data.lan 
-			| convert mstime(_time) AS ms_time
-			| eval ms_time = ms_time * 1000
-			| table ms_time */
 			
 			$("#splunk").click(function()
 			{
@@ -420,10 +473,37 @@
 					{
 						geojson = JSON.parse(data);
 												
-					}		
+				
+				L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
+				{
+					return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
+				};
+
+			
+				var geoJsonLayer = L.geoJson(geojson, {
+				    pointToLayer: function(geoJsonPoint, latlng) {
+						return L.marker(latlng, {icon:myIcon});
+					},
+					style: function (feature) {    
+						return {
+						  "color":		"#FF0000",
+						  "weight":		2,
+						  "opacity":	0.4
+						};
+					  }
 				});
+			
+				var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
+				  updateTimeDimension: 		true,
+				  updateTimeDimensionMode:	'replace',  
+				  duration:					'PT30M',
+				});
+				
 				/*$("#output").html(geojson.toString());*/
 				$("#output").html(JSON.stringify(geojson));
+				geoJsonTimeLayer.addTo(map);
+					}		
+				});
 			});
 			
 		});	

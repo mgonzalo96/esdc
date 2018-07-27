@@ -24,93 +24,62 @@
 			html, body {
 				margin:0px; padding:0px
 			}
-		
-			.container {
-				display:block;
+			
+			#top-title {
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 8%;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:14px;
+				padding: 10px;
+				display:flex;
+				text-align:center;
+			}
+			
+			#userControl {
+				padding: 10px;			
 			}
 			
 			#checkbox {
-				position:fixed;
-				top:150px;
-				right:40%;
-    			padding: 12px 20px;
-				margin: 8px 0;
+				position: absolute;
+				padding: 8px 12px 8px 12px;
 				display: block;
-				border: 1px solid #ccc;
-				border-radius: 4px;
+				border: 1px solid #ddd;
 				box-sizing: border-box;
-				font-family:sans-serif;
-				visibility:hidden;
-				z-index:100;
-				background:rgba(255,255,255,0.9);
+				font-family:sans serif;
+				font-size:14px;
+				visibility: hidden;
+				z-index: 100;
+				background-color: #f6f6f6;
 			}
-			
-			#top-title {
-				display:inline;
-				color:#FFF;
-				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
-				height: 80px;
-				box-shadow: 0px 4px 6px -6px #000;
-				font-size:20px;
-				text-align: center;
-			}
-			
+						
 			#footer-title {
    				position: fixed;
-    			height: 80px;
+    			height: 3%;
     			margin-top: 1em;
 				bottom: 0;
 				right: 0;
 				left: 0;
 				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
-			}	
+				z-index:1000;
+			}
 			
 			#map {
-				height:860px;
+				height:1080px;
 				width:100%;
 				z-index:1;
-			}
-			
-			span {
-			 	font-family:sans-serif;
-			}
-			
-			#userControl {
-				color:#FFF;
-				height: 80px;
-				text-align: center;
-				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
-				display: block;
-			}
+			}			
 			
 			input[type=text] {
     			width: 300px;
     			padding: 12px 20px;
 				margin: 8px 0;
-				display: inline-block;
+				display: inline;
 				border: 1px solid #ccc;
 				border-radius: 4px;
 				box-sizing: border-box;
 				text-align: center;
 			}
-			
-			#output {
-				background-color: lightblue;
-				width: 320px;
-				height: 240px;
-				overflow: scroll;
-			}
-			
-			.my-div-icon
-				{
-				  background-color:rgba(255,0,0,0.5);
-				  border:2px solid rgba(255,0,0,0.3);
-				  color:blue;
-				  font-weight:bold;
-				  text-align:center;
-				  border-radius:50%;
-				  line-height:30px;
-				}
 				
 			.dropbtn {
 				background-color: #4CAF50;
@@ -139,7 +108,9 @@
 				border-bottom: 1px solid #ddd;
 			}
 
-			#myInput:focus {outline: 3px solid #ddd;}
+			#myInput:focus {
+				outline: 3px solid #ddd;
+			}
 
 			.dropdown {
 				position: relative;
@@ -164,9 +135,108 @@
 				display: block;
 			}
 
-			.dropdown a:hover {background-color: #ddd;}
+			.dropdown a:hover {
+				background-color: #ddd;
+			}
 
-			.show {display: block;z-index:5000;}
+			.show {
+				display: block;
+				z-index:5000;
+			}
+			
+			.info {
+				padding: 8px;
+				font: 14px  sans-serif;
+				background: rgba(255,255,255,0.5);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2;
+			}
+			
+			.legend {				
+				line-height: 20px;
+				color: white;
+				font-weight:bold;
+				z-index:500;
+				position:fixed;
+				bottom:20px;
+				right:400px;
+				text-shadow: 1px 1px 3px black;
+			}
+			
+			.legend i {			
+				width: 50px;
+				height: 15px;
+				float: left;
+				margin-right: 20px;
+				opacity: 0.8;
+				position:relative;
+				border-radius: 2px;
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);	
+			}
+			.Gaia{
+				border: 2px solid #01FF70;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #01FF70;
+				opacity:0.9
+ 			}
+			
+			.Planck{
+				border: 2px solid #FFDC00;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #FFDC00;
+				opacity:0.9
+			}
+			
+			.Cluster{
+				border: 2px solid #FF851B;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #FF851B;
+				opacity:0.9
+			}
+			
+			.Ulysses{
+				border: 2px solid #FF4136;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #FF4136;
+				opacity:0.9
+			}
+			
+			.ESASky{
+				border: 2px solid #85144b;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #85144b;
+				opacity:0.9
+			}
+			
+			.ISSSolACES{
+				border: 2px solid #F012BE;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #F012BE;
+				opacity:0.9
+			}
+			
+			.VOSpace{
+				border: 2px solid #001f3f;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #001f3f;
+				opacity:0.9
+			}
+			
+			.Soho{
+				border: 2px solid #0074D9;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #0074D9;
+				opacity:0.9
+			}
+			
+			.LisaPathfinder{
+				border: 2px solid #7FDBFF;
+				border-radius: 50%;
+				box-shadow:0 0 20px 8px #7FDBFF;
+				opacity:0.9
+			}
+  
 
 		</style>
 	</head>
@@ -177,55 +247,55 @@
 				<input id="timeInput" type="text" name="datetimes" value=""></input>
 				<p id="earliestDate"></p>
 				<p id="latestDate"></p>			
+			</div>
+			<div id="userControl">
+				<div class="dropdown">
+					<button class="hide dropbtn">Archives</button>
+				</div>					
+				<input type="button" id="splunk" class="dropbtn" value="Submit"></input>	
+				<div class="dropdown">
+					<button id="dropMenu" class="dropbtn">SID Selector</button>
+					<div id="myDropdown" class="dropdown-content">
+						<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+						<a href="#">SID 100000</a>
+					</div>
+				</div>
 			</div>		
 		</div>
-		<div id="userControl">
-			<input type="button" id="splunk" class="dropbtn" value="SUBMIT"></input>
-			<input type="button" class="hide dropbtn" value="HOST SELECTOR"><span></span></input>		
-			<div class="dropdown">
-				<button id="dropMenu" class="dropbtn">SID SELECTOR</button>
-				  <div id="myDropdown" class="dropdown-content">
-					<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
-					<a href="#about">SID 100000</a>
-					<a href="#base">SID 100000</a>
-					<a href="#blog">SID 100000</a>
-					<a href="#contact">SID 100000</a>
-					<a href="#custom">SID 100000</a>
-					<a href="#support">SID 100000</a>
-					<a href="#tools">SID 100000</a>
-				  </div>
-			</div>
-		
-		</div>
 			<div id="checkbox">
-				<!--checked="checked"-->
-				<div>
-					<label style="display:inline;left:0px" class="container">Gaia</label>
-		  			<input style="display:inline;right:0px" type="checkbox" name="host" value="gea03.n1data.lan">								
+				<div>			
+		  			<input type="checkbox" name="host" value="gea03.n1data.lan">	
+		  			<label>Gaia</label>							
 				</div>
 				<div>
-					<label style="display:inline;left:0px" class="container">Esasky</label>
-					<input style="display:inline;right:0px" type="checkbox" name="host" value="ammiapp02">
+					<input type="checkbox" name="host" value="ammiapp02">
+					<label>Esasky</label>
 				</div>
 			  	<div>	
-					<label style="display:inline;left:0px" class="container">Vospace</label>
-			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="vospace.n1data.lan">
+			  		<input type="checkbox" name="host" value="vospace.n1data.lan">
+					<label>Vospace</label> 		
 			  	</div>
 			  	<div>	
-			  		<label style="display:inline;left:0px" class="container">Lisa PathFinder</label>
-			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="lpfsa.n1data.lan">
+			  		<input type="checkbox" name="host" value="lpfsa.n1data.lan">
+			  		<label>Lisa PathFinder</label>
+			  	</div>
+			  	<div>			
+			  		<input type="checkbox" name="host" value="isssolac.n1data.lan">
+			  		<label>ISS-SolACES</label>
 			  	</div>
 			  	<div>	
-			  		<label style="display:inline;left:0px" class="container">ISS-SolACES</label>
-			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="isssolac.n1data.lan">
+			  		<input type="checkbox" name="host" value="pla">
+			  		<label>Planck</label>	
 			  	</div>
-			  	<div>	
-			  		<label style="display:inline;left:0px" class="container">PLA</label>
-			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="pla">
-			  	</div>
-			  	<div>	
-			  		<label style="display:inline;left:0px" class="container">SSA</label>
-			  		<input style="display:inline;right:0px" type="checkbox" name="host" value="ssa.esac.esa.int">
+			  	<div>		
+			  		<input type="checkbox" name="host" value="ssa.esac.esa.int">
+			  		<label>Soho</label>
 			  	</div>	
 			</div>
 		<div id="map"></div>
@@ -233,6 +303,22 @@
 		<script>
 		$(window).on('load',function() // changed the position of this function
 		{
+			// variable storing each log with its color
+			var ServerColor = {
+				Gaia:				'#01FF70',//'#0004FF',
+				Planck:				'#FFDC00',//'#13ADFB',
+				Cluster:			'#FF851B',//'#0A9C10',
+				Ulysses:			'#FF4136',//'#FDCF08',
+				ESASky:				'#85144b',//'#10115C',
+				ISSSolACES:			'#F012BE',//'#003C02',
+				VOSpace:			'#001f3f',//'#E868EF',
+				Soho:				'#0074D9',//'#19F821',
+				LisaPathfinder:		'#7FDBFF'//'#19F8EE'
+			};
+			
+			// variable storing all the host's names		
+			var hostArray = ['Gaia','Planck','Cluster','Ulysses','ESASky','VOSpace','Soho','LisaPathfinder'];
+			
 			/* When the user clicks on the button,
 			toggle between hiding and showing the dropdown content */
 			$("#dropMenu").click(function()
@@ -264,8 +350,7 @@
 					}
 				}
 			}
-		
-			
+				
 			var dataParams = {earliest:"",latest:""};
 			var start = moment().subtract(29, 'days');
 			var end = moment();
@@ -315,26 +400,6 @@
 						"host": "gea03.n1data.lan",
 						"time": 1528102770000
 					}
-				}, {
-					"type": "Feature",
-					"geometry": {
-						"type": "Point",
-						"coordinates": [5.8283, 50.9555]
-					},
-					"properties": {
-						"host": "gea03.n1data.lan",
-						"time": 1528102770500
-					}
-				}, {
-					"type": "Feature",
-					"geometry": {
-						"type": "Point",
-						"coordinates": [8.7, 49.4167]
-					},
-					"properties": {
-						"host": "gea03.n1data.lan",
-						"time": 1528102771000
-					}
 				}]
 			};***********/
 			var geojson = {};
@@ -346,8 +411,8 @@
 			*/			
 
 			var map = L.map('map', {
-				zoom:	2,
-				center:	[0, 0],
+				zoom:	3,
+				center:	[20, 0],
 			});		
 			
 			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
@@ -386,7 +451,25 @@
 			});
 			
 			t.addTo(map);*********/
-
+			
+			/**************   Generate a legend for the map   ***************/
+			
+			// control for generating the interactive legend
+			var legend = L.control({position: 'bottomright'});
+			
+			legend.onAdd = function (map)
+			{
+				var div = L.DomUtil.create('div', 'info legend');
+				for (var i = 0; i < hostArray.length; i++)
+				{		
+					div.innerHTML += 	'<i style="background:' +
+										ServerColor[hostArray[i].toString()] + 
+						 				'"></i> ' + hostArray[i].toString() +
+						 				'<br>';
+				}
+				return div;
+			};	
+			legend.addTo(map);	
 			
 			/**************   Time Dimension  ***************/
 			var timeDimension = new L.TimeDimension({});
@@ -447,7 +530,7 @@
 				iconAnchor: [5, 25]
 			});*/
 			
-			var myIcon = L.divIcon({className: 'my-div-icon'});
+			var myIcon = 
 			
 			/*****************************************************************
 			*****************************************************************/
@@ -475,34 +558,28 @@
 						geojson = JSON.parse(data);
 												
 				
-				L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
-				{
-					return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
-				};
+						L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
+						{
+							return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
+						};
 
 			
-				var geoJsonLayer = L.geoJson(geojson, {
-				    pointToLayer: function(geoJsonPoint, latlng) {
-						return L.marker(latlng, {icon:myIcon});
-					},
-					style: function (feature) {    
-						return {
-						  "color":		"#FF0000",
-						  "weight":		2,
-						  "opacity":	0.4
-						};
-					  }
-				});
+						var geoJsonLayer = L.geoJson(geojson, {
+							pointToLayer: function(geoJsonPoint, latlng)
+							{
+								var host = geoJsonPoint.properties.host.toString();
+								var myIcon  = L.divIcon({className: host});	
+								return L.marker(latlng, { icon: myIcon });
+							},
+						});
 			
-				var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
-				  updateTimeDimension: 		true,
-				  updateTimeDimensionMode:	'replace',  
-				  duration:					'PT30M',
-				});
+						var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
+						  updateTimeDimension: 		true,
+						  updateTimeDimensionMode:	'replace',  
+						  duration:					'PT30M',
+						});
 				
-				/*$("#output").html(geojson.toString());*/
-				$("#output").html(JSON.stringify(geojson));
-				geoJsonTimeLayer.addTo(map);
+						geoJsonTimeLayer.addTo(map);
 					}		
 				});
 			});
