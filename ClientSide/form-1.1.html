@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<hmtl >
+	<head>
+		<meta 	charset="utf-8">	
+		<title>interactive map</title>
+		<meta 	name="viewport" 	content="width=device-width, initial-scale=1">
+		<link 	rel="stylesheet" 	href="./lib/leaflet.css"/>
+		<link 	rel="stylesheet" 	href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
+        <link 	rel="stylesheet" 	href="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.control.min.css" />
+		<script src="./lib/leaflet.js"></script>
+		<script src="./src/src.js"></script>
+		<script src="./dist/migrationlayerpretrify.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" 	src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" 	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+		<script type="text/javascript" 	src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+        <script type="text/javascript" 	src="https://cdn.rawgit.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
+        <script type="text/javascript" 	src="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.min.js"></script>
+        <script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
+		<link 	rel="stylesheet" 	type="text/css" 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+		<style>
+		
+			html, body {
+				margin:0px; padding:0px
+			}
+			
+			#top-title {
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 8%;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:14px;
+				padding: 10px;
+				display:flex;
+				text-align:center;
+			}
+			
+			#userControl {
+				padding: 10px;			
+			}
+			
+			#checkbox {
+				position: absolute;
+				padding: 8px 12px 8px 12px;
+				display: block;
+				border: 1px solid #ddd;
+				box-sizing: border-box;
+				font-family:sans serif;
+				font-size:14px;
+				visibility: hidden;
+				z-index: 100;
+				background-color: #f6f6f6;
+			}
+						
+			#footer-title {
+   				position: fixed;
+    			height: 3%;
+    			margin-top: 1em;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				z-index:1000;
+			}
+			
+			#map {
+				height:1200px;
+				width:100%;
+				z-index:1;
+			}			
+			
+			input[type=text] {
+    			width: 300px;
+    			padding: 12px 20px;
+				margin: 8px 0;
+				display: inline;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				box-sizing: border-box;
+				text-align: center;
+			}
+				
+			.dropbtn {
+				background-color: #4CAF50;
+				color: white;
+				padding: 10px;
+				font-size: 14px;
+				border: none;
+				cursor: pointer;
+				border-radius:4px;
+				width:140px;
+			}
+
+			.dropbtn:hover, .dropbtn:focus {
+				background-color: #3e8e41;
+			}
+
+			#myInput {
+				border-box: box-sizing;
+				background-image: url('searchicon.png');
+				background-position: 14px 12px;
+				background-size: 20px 20px;
+				background-repeat: no-repeat;
+				font-size: 12px;
+				padding: 14px 20px 12px 45px;
+				border: none;
+				border-bottom: 1px solid #ddd;
+			}
+
+			#myInput:focus {
+				outline: 3px solid #ddd;
+			}
+
+			.dropdown {
+				position: relative;
+				display: inline-block;
+			}
+
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: #f6f6f6;
+				min-width: 150px;
+				overflow: auto;
+				border: 1px solid #ddd;
+			}
+
+			.dropdown-content a {
+				font-family:sans serif;
+				font-size:14px;
+				color: black;
+				padding: 12px 16px;
+				text-decoration: none;
+				display: block;
+			}
+
+			.dropdown a:hover {
+				background-color: #ddd;
+			}
+
+			.show {
+				display: block;
+				z-index:5000;
+			}
+			
+			.info {
+				padding: 8px;
+				font: 14px  sans-serif;
+				background: rgba(255,255,255,0.5);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2;
+			}
+			
+			.legend {				
+				line-height: 20px;
+				color: white;
+				font-weight:bold;
+				z-index:500;
+				position:fixed;
+				bottom:20px;
+				right:400px;
+				text-shadow: 1px 1px 3px black;
+			}
+			
+			.legend i {			
+				width: 50px;
+				height: 15px;
+				float: left;
+				margin-right: 20px;
+				opacity: 0.8;
+				position:relative;
+				border-radius: 2px;
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);	
+			}
+			.Gaia{
+				border: 3px solid #01FF70;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+ 			}
+			
+			.Planck{
+				border: 3px solid #FFDC00;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}		
+			
+			.Cluster{
+				border: 3px solid #FF851B;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.Ulysses{
+				border: 3px solid #FF4136;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.ESASky{
+				border: 3px solid #85144b;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.ISSSolACES{
+				border: 3px solid #F012BE;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.VOSpace{
+				border: 3px solid #001f3f;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.Soho{
+				border: 3px solid #0074D9;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			.LisaPathfinder{
+				border: 3px solid #7FDBFF;
+				border-radius: 50%;
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+  
+
+		</style>
+	</head>
+	<body>
+		<div id="top-title">
+			<div id="calendar">	
+				<input id="timeInput" type="text" name="datetimes" value=""></input>
+				<p id="earliestDate"></p>
+				<p id="latestDate"></p>			
+			</div>
+			<div id="userControl">
+				<div class="dropdown">
+					<button class="hide dropbtn">Archives</button>
+				</div>					
+				<input type="button" id="splunk" class="dropbtn" value="Submit"></input>	
+			</div>		
+		</div>
+			<div id="checkbox">
+				<div>			
+		  			<input type="checkbox" name="host" value="gea03.n1data.lan">	
+		  			<label>Gaia</label>							
+				</div>
+				<div>
+					<input type="checkbox" name="host" value="ammiapp02">
+					<label>Esasky</label>
+				</div>
+			  	<div>	
+			  		<input type="checkbox" name="host" value="vospace.n1data.lan">
+					<label>Vospace</label> 		
+			  	</div>
+			  	<div>	
+			  		<input type="checkbox" name="host" value="csa">
+					<label>Cluster</label> 		
+			  	</div>
+			  	<div>	
+			  		<input type="checkbox" name="host" value="lpfsa.n1data.lan">
+			  		<label>Lisa PathFinder</label>
+			  	</div>
+			  	<div>			
+			  		<input type="checkbox" name="host" value="isssolac.n1data.lan">
+			  		<label>ISS-SolACES</label>
+			  	</div>
+			  	<div>	
+			  		<input type="checkbox" name="host" value="pla">
+			  		<label>Planck</label>	
+			  	</div>
+			  	<div>		
+			  		<input type="checkbox" name="host" value="ssa.esac.esa.int">
+			  		<label>Soho</label>
+			  	</div>	
+			</div>
+		<div id="map"></div>			
+		<script>
+		
+		// wait until the page is completely loaded
+		$(window).on('load',function()
+		{
+			// variable storing each log with its color
+			var ServerColor = {
+				Gaia:				'#01FF70',//'#0004FF',
+				Planck:				'#FFDC00',//'#13ADFB',
+				Cluster:			'#FF851B',//'#0A9C10',
+				Ulysses:			'#FF4136',//'#FDCF08',
+				ESASky:				'#85144b',//'#10115C',
+				ISSSolACES:			'#F012BE',//'#003C02',
+				VOSpace:			'#001f3f',//'#E868EF',
+				Soho:				'#0074D9',//'#19F821',
+				LisaPathfinder:		'#7FDBFF'//'#19F8EE'
+			};
+			
+			// variable storing all the host's names		
+			var hostArray = ['Gaia','Planck','Cluster','Ulysses','ESASky','VOSpace','Soho','LisaPathfinder'];
+			
+			
+			var geojson = {};
+				
+			// variable storing the interval time					
+			var dataParams = {earliest:"",latest:""};
+			
+			// varibles for setting the dafault calendar
+			var start = moment().subtract(29, 'days');
+			var end = moment();
+			
+			function writeDate(start,end)
+			{
+				$('#earliestDate').val(start.format('YYYY-MM-DD').toString() +
+				"T"+start.format('hh:mm').toString()+":00.000");
+				
+				$('#latestDate').val(end.format('YYYY-MM-DD') +
+				"T"+end.format('hh:mm')+":00.000");
+				
+				/*dataParams.earliest = $('#earliestDate').val();
+				dataParams.latest = $('#latestDate').val();
+				
+				var count = 1;
+				$('#checkbox input:checked').each(function()
+				{		
+					var host = "host"+count.toString();
+					dataParams[host] = $(this).attr('value');
+					count++;
+				});*/
+			}
+				
+			$('input[name="datetimes"]').daterangepicker({
+				timePicker: 	true,
+				minYear: 		2018,
+				startDate: 		moment().startOf('hour'),
+				endDate: 		moment().startOf('hour').add(32, 'hour'),
+				locale:			{ format: 'YY/MM/DD A' }
+			}, writeDate
+			);
+			
+			writeDate(start,end);
+
+			
+			/***************  Map Settings  ****************/
+			/*  
+				Global variable for our map. 
+				setView allows us to focus on Madrid (lat,lng)
+				with a specific zoom level 
+			*/			
+
+			var map = L.map('map', {
+				zoom:	3,
+				center:	[20, 0],
+			});		
+			
+			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
+	
+				
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});	
+			
+			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+			
+			var mapLink = '<a href="http://www.esri.com/">Esri</a>';
+        	var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+			var satelliteMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+			{attribution: '&copy; '+mapLink+', '+wholink,
+            maxZoom: 18,
+            });
+			
+			satelliteMap.addTo(map);
+							
+			var baseMaps = {
+				"Satellite Map": 	satelliteMap,
+				"CARTO-Dark":		baseMapDark,
+				"OSM": 				osmLayer,		
+				"Black and Whilte":	blackAndWhite		
+			};		
+			
+			L.control.layers(baseMaps).addTo(map);	
+			
+			/*************   Shadow Polygon  ******/
+			// global variable t: control the shadow over the map 
+			/*var t = L.terminator(
+			{
+				color:			'#00',
+				fillColor:	 	'#00',
+				fillOpacity:	0.3
+			});
+			t.addTo(map);/********/
+			
+			
+			/**************   Generate a legend for the map   ***************/	
+			// control for generating the interactive legend
+			var legend = L.control({position: 'bottomright'});
+			
+			legend.onAdd = function (map)
+			{
+				var div = L.DomUtil.create('div', 'info legend');
+				for (var i = 0; i < hostArray.length; i++)
+				{		
+					div.innerHTML += 	'<i style="background:' +
+										ServerColor[hostArray[i].toString()] + 
+						 				'"></i> ' + hostArray[i].toString() +
+						 				'<br>';
+				}
+				return div;
+			};	
+			legend.addTo(map);	
+			
+			/**************   Time Dimension  ***************/
+			// variables designed to help us go through a time slider
+			var timeDimension = new L.TimeDimension({});
+			
+			map.timeDimension = timeDimension; 
+			
+			var player = new L.TimeDimension.Player({
+				transitionTime:	10, 
+				loop: 			true,
+				startOver:		true
+			}, timeDimension
+			);
+						
+			var timeDimensionControlOptions = {
+				player:        			player,
+				timeDimension: 			timeDimension,
+				position:     			'bottomleft',
+				autoPlay:      			false,
+				minSpeed:      			0.1,
+				speedStep:     			1,
+				maxSpeed:      			10,
+				timeSliderDragUpdate: 	true
+			}			
+			
+			var t = L.terminator({time: 0}).addTo(map);
+			
+			var timeDimensionControl = new L.Control.TimeDimension(timeDimensionControlOptions);		
+			map.addControl(timeDimensionControl);
+						
+			L.TimeDimension.Layer.GeoJson.GeometryCollection = L.TimeDimension.Layer.GeoJson.extend({
+
+				// Do not modify features. Just return the feature if it intersects
+				// the time interval    
+				_getFeatureBetweenDates: function(feature, minTime, maxTime) {
+					var featureStringTimes = this._getFeatureTimes(feature);
+					if (featureStringTimes.length == 0) {
+						return feature;
+					}
+					var featureTimes = [];
+					for (var i = 0, l = featureStringTimes.length; i < l; i++) {
+						var time = featureStringTimes[i]
+						if (typeof time == 'string' || time instanceof String) {
+						    time = Date.parse(time.trim());
+						}
+						featureTimes.push(time);
+					}
+
+					if (featureTimes[0] > maxTime || featureTimes[l - 1] < minTime) {
+						return null;
+					}
+					
+					// move shadow with the time slider
+					var d = new Date(minTime);
+					var t2 = L.terminator({time:d});
+					t.setLatLngs(t2.getLatLngs());
+					t.redraw();			
+					return feature;
+				},
+
+			});
+		
+			/*
+			var icon = L.icon({
+				iconUrl: 'play.png',
+				iconSize: [22, 22],
+				iconAnchor: [5, 25]
+			});*/
+
+			
+			/*****************************************************************
+			*****************************************************************/
+			
+			$(".hide").click(function()
+			{
+				//$("#checkbox").slideToggle("slow");
+				$("#checkbox").css("visibility")==="hidden" ?
+				$("#checkbox").css({"visibility":"visible"}) :
+				$("#checkbox").css({"visibility":"hidden"});			
+			});		
+			
+			/********************  AJAX REQUEST  ****************************/
+			
+			$("#splunk").click(function()
+			{ 
+			
+			dataParams.earliest = $('#earliestDate').val();
+				dataParams.latest = $('#latestDate').val();
+				
+				var count = 1;
+				$('#checkbox input:checked').each(function()
+				{		
+					var host = "host"+count.toString();
+					dataParams[host] = $(this).attr('value');
+					count++;
+				});
+			
+				var str = "";
+				for (var k in dataParams){str += dataParams[k]+", ";}
+				alert(str);
+				// default values, avoid empty query and error on server
+				if (dataParams.earliest == "" || dataParams.latest=="" || !dataParams.hasOwnProperty('host1'))
+				{
+					var today = new Date();		
+					var yesterday  = new Date();
+					yesterday.setDate(yesterday.getDate() - 1);
+					dataParams.host = "ssa.esac.esa.int";
+				}
+				
+				
+				var startSplunk = function (){
+				
+				console.log('params= '+dataParams.host1);
+					$.ajax(
+					{
+				
+						url:"http://172.25.3.155:8122",
+						dataType: "text",
+						data: dataParams,
+						success: function(response)
+						{
+												
+							geojson = JSON.parse(response);
+							console.log('geojson= '+response);					
+							// create a instance of GeometryCollection class								
+							L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
+							{
+								return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
+							};
+
+							// create a layer with the points
+							var geoJsonLayer = L.geoJson(geojson, {
+								pointToLayer: function(geoJsonPoint, latlng)
+								{
+									var host = geoJsonPoint.properties.host.toString();
+									var myIcon  = L.divIcon({className: host});	
+									return L.marker(latlng, { icon: myIcon });
+								},
+								onEachFeature: function (feature, layer) {
+									layer.bindPopup('<h3>HOST:</h3><p>'+feature.properties.host+'</p>');
+	  							}			
+							});
+						
+							// generate the time slider
+							var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
+							  updateTimeDimension: 		true,
+							  updateTimeDimensionMode:	'replace',  
+							  duration:					'PT30M',
+							});
+						
+							// add the layer of points to the map
+							geoJsonTimeLayer.addTo(map);
+						}		
+					});
+				};
+				startSplunk();
+			});
+			
+		});	
+		</script>
+	</body>
+</html>

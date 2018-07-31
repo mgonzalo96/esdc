@@ -1,0 +1,38 @@
+31/07/2018
+last release
+Author: M Gonzalo Barranco Moreno
+
+INSTALLATION STEPS
+https://github.com/mgonzalo96/esdc
+########################################
+CLIENT SIDE
+#########################################
+
+For the near real time web page:
+
+to install an application server (Tomcat) and use the nrtsaa-1.1.html
+web page.
+
+to alocate in the same directory the followings folder: 'dist', 'lib' and 'src'.
+
+_________________________________________
+
+For the interactive web page:
+
+to install an application server (Tomcat) and use the form-1.1.html
+web page.
+
+to alocate in the same directory the followings folder: 'dist', 'lib' and 'src'.
+
+
+########################################
+SERVER SIDE
+#########################################
+
+install node on the server and run app2ports-0.0.4.js
+and also the splunk-sdk library.
+
+important:
+var splunkjs = require('/home/esdcops/mysplunk/node_modules/splunk-sdk');
+
+change this directory in your computer.
