@@ -64,7 +64,7 @@
 			}
 			
 			#map {
-				height:1080px;
+				height:1200px;
 				width:100%;
 				z-index:1;
 			}			
@@ -188,67 +188,61 @@
 				opacity:0.7;
 			}
 			
-			@keyframes pulsate {
-				0% {
-				  transform: scale(.1);
-				  opacity: 0.0;
-				}
-				50% {
-				  opacity: 1;
-				}
-				100% {
-				  transform: scale(1.2);
-				  opacity: 0;
-				}
-			}
 			
 			.Cluster{
-				border: 2px solid #FF851B;
+				border: 3px solid #FF851B;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #FF851B;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.Ulysses{
-				border: 2px solid #FF4136;
+				border: 3px solid #FF4136;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #FF4136;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.ESASky{
-				border: 2px solid #85144b;
+				border: 3px solid #85144b;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #85144b;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.ISSSolACES{
-				border: 2px solid #F012BE;
+				border: 3px solid #F012BE;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #F012BE;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.VOSpace{
-				border: 2px solid #001f3f;
+				border: 3px solid #001f3f;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #001f3f;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.Soho{
-				border: 2px solid #0074D9;
+				border: 3px solid #0074D9;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #0074D9;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
 			
 			.LisaPathfinder{
-				border: 2px solid #7FDBFF;
+				border: 3px solid #7FDBFF;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #7FDBFF;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
 			}
   
 
@@ -302,8 +296,7 @@
 			  		<label>Soho</label>
 			  	</div>	
 			</div>
-		<div id="map"></div>
-		<div id="footer-title"></div>				
+		<div id="map"></div>			
 		<script>
 		
 		// wait until the page is completely loaded
@@ -405,15 +398,13 @@
 			L.control.layers(baseMaps).addTo(map);	
 			
 			/*************   Shadow Polygon  ******/
-			var timeShadow = {time:0};
 			// global variable t: control the shadow over the map 
-			var t = L.terminator(
+			/*var t = L.terminator(
 			{
 				color:			'#00',
 				fillColor:	 	'#00',
 				fillOpacity:	0.3
 			});
-			
 			t.addTo(map);/********/
 			
 			
@@ -459,6 +450,8 @@
 				timeSliderDragUpdate: 	true
 			}			
 			
+			var t = L.terminator({time: 0}).addTo(map);
+			
 			var timeDimensionControl = new L.Control.TimeDimension(timeDimensionControlOptions);		
 			map.addControl(timeDimensionControl);
 						
@@ -482,7 +475,13 @@
 
 					if (featureTimes[0] > maxTime || featureTimes[l - 1] < minTime) {
 						return null;
-					}					
+					}
+					
+					// move shadow with the time slider
+					var d = new Date(minTime);
+					var t2 = L.terminator({time:d});
+					t.setLatLngs(t2.getLatLngs());
+					t.redraw();			
 					return feature;
 				},
 
@@ -511,7 +510,17 @@
 			
 			$("#splunk").click(function()
 			{
+				
 				alert(Object.keys(dataParams));
+				// default values, avoid empty query and error on server
+				if (dataParams.earliest == "" || dataParams.latest=="" || !dataParams.hasOwnProperty('host'))
+				{
+					var today = new Date();		
+					var yesterday  = new Date();
+					yesterday.setDate(yesterday.getDate() - 1);
+					dataParams.host = "ssa.esac.esa.int";
+				}
+				
 				$.ajax(
 				{
 					url:"http://172.25.3.155:8122",
@@ -535,6 +544,9 @@
 								var myIcon  = L.divIcon({className: host});	
 								return L.marker(latlng, { icon: myIcon });
 							},
+							onEachFeature: function (feature, layer) {
+    							layer.bindPopup('<h3>HOST:</h3><p>'+feature.properties.host+'</p>');
+  							}			
 						});
 						
 						// generate the time slider
