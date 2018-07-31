@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <hmtl >
 	<head>
-		<meta charset="utf-8">	
-		<title>options</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="./lib/leaflet.css"/>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
-        <link rel="stylesheet" href="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.control.min.css" />
+		<meta 	charset="utf-8">	
+		<title>interactive map</title>
+		<meta 	name="viewport" 	content="width=device-width, initial-scale=1">
+		<link 	rel="stylesheet" 	href="./lib/leaflet.css"/>
+		<link 	rel="stylesheet" 	href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
+        <link 	rel="stylesheet" 	href="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.control.min.css" />
 		<script src="./lib/leaflet.js"></script>
 		<script src="./src/src.js"></script>
-		<!--<script src="./dist/leaflet.migrationLayer.js"></script>-->
 		<script src="./dist/migrationlayerpretrify.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.min.js"></script>
+		<script type="text/javascript" 	src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" 	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+		<script type="text/javascript" 	src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js"></script>
+        <script type="text/javascript" 	src="https://cdn.rawgit.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
+        <script type="text/javascript" 	src="https://cdn.rawgit.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.min.js"></script>
         <script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
-		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+		<link 	rel="stylesheet" 	type="text/css" 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 		<style>
 		
 			html, body {
@@ -182,10 +181,25 @@
  			}
 			
 			.Planck{
-				border: 2px solid #FFDC00;
+				border: 3px solid #FFDC00;
 				border-radius: 50%;
-				box-shadow:0 0 20px 8px #FFDC00;
-				opacity:0.9
+				height:50px;
+				width:50px;
+				opacity:0.7;
+			}
+			
+			@keyframes pulsate {
+				0% {
+				  transform: scale(.1);
+				  opacity: 0.0;
+				}
+				50% {
+				  opacity: 1;
+				}
+				100% {
+				  transform: scale(1.2);
+				  opacity: 0;
+				}
 			}
 			
 			.Cluster{
@@ -241,7 +255,6 @@
 		</style>
 	</head>
 	<body>
-		<!--Web App Header, made of: esa logo, esdc title, nrtsaa subtitle -->
 		<div id="top-title">
 			<div id="calendar">	
 				<input id="timeInput" type="text" name="datetimes" value=""></input>
@@ -253,19 +266,6 @@
 					<button class="hide dropbtn">Archives</button>
 				</div>					
 				<input type="button" id="splunk" class="dropbtn" value="Submit"></input>	
-				<div class="dropdown">
-					<button id="dropMenu" class="dropbtn">SID Selector</button>
-					<div id="myDropdown" class="dropdown-content">
-						<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-						<a href="#">SID 100000</a>
-					</div>
-				</div>
 			</div>		
 		</div>
 			<div id="checkbox">
@@ -305,7 +305,9 @@
 		<div id="map"></div>
 		<div id="footer-title"></div>				
 		<script>
-		$(window).on('load',function() // changed the position of this function
+		
+		// wait until the page is completely loaded
+		$(window).on('load',function()
 		{
 			// variable storing each log with its color
 			var ServerColor = {
@@ -323,39 +325,13 @@
 			// variable storing all the host's names		
 			var hostArray = ['Gaia','Planck','Cluster','Ulysses','ESASky','VOSpace','Soho','LisaPathfinder'];
 			
-			/* When the user clicks on the button,
-			toggle between hiding and showing the dropdown content */
-			$("#dropMenu").click(function()
-			{
-				myFunction();
-			});
 			
-			function myFunction()
-			{
-				document.getElementById("myDropdown").classList.toggle("show");
-			}
-			
-			$("#myInput").keyup(function()
-			{
-				filterFunction();
-			});
-			
-			function filterFunction() {
-				var input, filter, ul, li, a, i;
-				input = document.getElementById("myInput");
-				filter = input.value.toUpperCase();
-				div = document.getElementById("myDropdown");
-				a = div.getElementsByTagName("a");
-				for (i = 0; i < a.length; i++) {
-					if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-						a[i].style.display = "";
-					} else {
-						a[i].style.display = "none";
-					}
-				}
-			}
+			var geojson = {};
 				
+			// variable storing the interval time					
 			var dataParams = {earliest:"",latest:""};
+			
+			// varibles for setting the dafault calendar
 			var start = moment().subtract(29, 'days');
 			var end = moment();
 			
@@ -389,24 +365,8 @@
 			);
 			
 			writeDate(start,end);
+
 			
-			
-			/***************  Data Hardcoded  *****
-			var geojson = {
-				"type": "FeatureCollection",
-				"features": [{
-					"type": "Feature",
-					"geometry": {
-						"type": "Point",
-						"coordinates": [51.5333, 25.2867]
-					},
-					"properties": {
-						"host": "gea03.n1data.lan",
-						"time": 1528102770000
-					}
-				}]
-			};***********/
-			var geojson = {};
 			/***************  Map Settings  ****************/
 			/*  
 				Global variable for our map. 
@@ -444,7 +404,7 @@
 			
 			L.control.layers(baseMaps).addTo(map);	
 			
-			/**************   Shadow Polygon  ******
+			/*************   Shadow Polygon  ******/
 			var timeShadow = {time:0};
 			// global variable t: control the shadow over the map 
 			var t = L.terminator(
@@ -454,10 +414,10 @@
 				fillOpacity:	0.3
 			});
 			
-			t.addTo(map);*********/
+			t.addTo(map);/********/
 			
-			/**************   Generate a legend for the map   ***************/
 			
+			/**************   Generate a legend for the map   ***************/	
 			// control for generating the interactive legend
 			var legend = L.control({position: 'bottomright'});
 			
@@ -476,6 +436,7 @@
 			legend.addTo(map);	
 			
 			/**************   Time Dimension  ***************/
+			// variables designed to help us go through a time slider
 			var timeDimension = new L.TimeDimension({});
 			
 			map.timeDimension = timeDimension; 
@@ -533,8 +494,7 @@
 				iconSize: [22, 22],
 				iconAnchor: [5, 25]
 			});*/
-			
-			var myIcon = 
+
 			
 			/*****************************************************************
 			*****************************************************************/
@@ -561,13 +521,13 @@
 					{
 						geojson = JSON.parse(data);
 												
-				
+						// create a instance of GeometryCollection class								
 						L.timeDimension.layer.geoJson.geometryCollection = function (layer, options)
 						{
 							return new L.TimeDimension.Layer.GeoJson.GeometryCollection(layer, options);
 						};
 
-			
+						// create a layer with the points
 						var geoJsonLayer = L.geoJson(geojson, {
 							pointToLayer: function(geoJsonPoint, latlng)
 							{
@@ -576,14 +536,19 @@
 								return L.marker(latlng, { icon: myIcon });
 							},
 						});
-			
+						
+						// generate the time slider
 						var geoJsonTimeLayer = L.timeDimension.layer.geoJson.geometryCollection(geoJsonLayer, {
 						  updateTimeDimension: 		true,
 						  updateTimeDimensionMode:	'replace',  
 						  duration:					'PT30M',
 						});
-				
+						
+						// add the layer of points to the map
 						geoJsonTimeLayer.addTo(map);
+						
+						// restart the variable
+						dataParams = {earliest:"",latest:""};
 					}		
 				});
 			});

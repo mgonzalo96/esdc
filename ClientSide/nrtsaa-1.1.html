@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<hmtl >
+	<head>
+		<title>NRTSAA-1.1</title>
+		<meta 	charset="utf-8">			
+		<meta 	name="viewport" 	content="width=device-width, initial-scale=1">
+		<link 	rel="stylesheet" 	href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+		<link 	rel="stylesheet" 	href="./lib/leaflet.css"/>
+		<link 	rel="stylesheet" 	href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" />
+		<script src="./lib/leaflet.js"></script>
+		<script src="./src/src.js"></script>
+		<script src="./dist/migrationlayerpretrify.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>	
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link 	rel="stylesheet" 	href="./dist/leaflet.zoomhome.css"/>
+		<script src="./dist/leaflet.zoomhome.js"></script>
+		<script src=" https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js"></script>
+		<style>
+		
+			html, body {
+				margin:0px; padding:0px
+			}
+						
+			#top-title {
+				color:#FFF;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				height: 8%;
+				box-shadow: 0px 4px 6px -6px #000;
+				font-size:30px;
+				padding:15px
+			}
+			
+			#footer-title {
+   				position: fixed;
+    			height: 3%;
+				bottom: 0;
+				right: 0;
+				left: 0;
+				background: linear-gradient(60deg, #5F1626 0%, #A21A3E 100%);
+				z-index:2;
+			}	
+			
+			#map {
+				height:1080px;
+				width:100%;
+				z-index:1;
+			}
+			
+
+			.info {
+				padding: 8px;
+				font: 14px  sans-serif; <!--Arial, Helvetica,-->
+				background: rgba(255,255,255,0.5);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2;
+			}
+			
+			.legend {				
+				line-height: 20px;
+				color: white;
+				font-weight:bold;
+				z-index:500;
+				position:fixed;
+				bottom:20px;
+				text-shadow: 1px 1px 3px black;
+			}
+			
+			.legend i {			
+				width: 50px;
+				height: 15px;
+				float: left;
+				margin-right: 20px;
+				opacity: 0.8;
+				position:relative;
+				border-radius: 2px;
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);	
+			}
+		
+			.timeStamp {
+				font-size:14px;
+				text-align:center;
+				font-family: Segoe UI, sans-serif
+			}
+			
+			.dot {
+				text-shadow: 1px 1px 1px black;
+				height: 18px;
+				background-color: red;
+				width:25px;
+				border-radius: 15%;
+				display: block;
+				text-align:center
+			}
+			
+			i span{
+				color: white;
+				font-size:12px;
+				text-align:center;
+				font-family: Segoe UI, sans-serif;
+				text-shadow: 0.5px 0.5px grey;
+				font-weight: normal;
+				font-style: normal;			
+			}
+			
+			#slide-control-legend {
+				position:absolute;
+				left:40px;
+				top:3px;
+				background-image:url(rocket.png);
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height:25px;
+				width:25px;
+				z-index:-1;
+			}
+			
+			#icon-host-box {
+				position:fixed;
+				top:50%;
+				left:20px;
+				z-index:3
+			}
+			
+			.legend-container{
+				padding: 8px;
+				font: 14px  sans-serif;
+				background: white;
+				background: rgba(255,255,255,0.4);
+				box-shadow: 0 0 15px rgba(0,0,0,0.7);
+				border-radius: 2px;
+				z-index:2
+			}
+			
+			#startMessage{
+				font: 14px  sans-serif;
+				position:fixed;
+				top:50%;
+				left:50%;
+				background-color:rgba(255,255,255,0.8);
+				height:30px;
+				width:200px;
+				z-index:2000;
+				color:black;
+				visibility: visible;
+				text-align:center;
+				line-height:30px;
+				border:1px solid grey;
+				border-radius: 5px;					
+			}
+			
+			#leg-cont>i:hover{
+				box-shadow: inset 0 0 2px #000000;
+			}
+			
+			.checker{
+				background:url(legend-icon.png);
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height:25px;
+				width:25px;
+				box-shadow: 0 0 3px rgba(0,0,0,0.9);
+				border-radius: 5px;
+			}
+			
+			.checker:hover{
+				box-shadow: inset 0 0 2px #000000;
+			}
+			
+			#control-pause {
+				position:absolute;
+				left:48%;
+				top:3px;
+				background-image:url(pause.png);
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height:25px;
+				width:25px;
+				z-index:-1;
+			}
+			
+			#control-play {
+				position:absolute;
+				left:50%;
+				top:3px;
+				background-image:url(play.png);
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				height:25px;
+				width:25px;
+				z-index:-1;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="top-title">
+			<a href="https://www.cosmos.esa.int/">
+				<img src="http://m.esa.int/extension/esa_ext/design/m/images/layout/esa-logo.png" style="float:left;height:40px;"/>
+			</a>
+			<div class="timeStamp" >ACCESSES TO ESAC SCIENCE DATA CENTRE (ESDC) BETWEEN :</div>
+			<div class="timeStamp" id="dateNow">something goes wrong</div>
+			<div class="timeStamp" id="dateBefore">something goes wrong</div>
+		</div>
+		<div id="startMessage">Starting ...</div>
+		<div id="map"></div>
+		<div id="footer-title">
+			<div id="slide-control-legend">
+			</div>
+			<div id="control-play">
+			</div>
+			<div id="control-pause">
+			</div>
+		</div>				
+		<script type="text/javascript">
+		
+		// wait until the whole page is completed loaded
+		$(window).on('load',function()
+		{ 	
+			// variable storing data to visualize without Gaia accesses
+			var dataNoGaia = [];
+			
+			// variable storing the host name, number of impacts and coordinates array of each host
+			// needed for the interactive legend
+			var countHost = [];
+			
+			// variable storing the response from server
+			var allData = [];
+			
+			// variable storing each host with its color
+			var ServerColor = {
+				Gaia:				'#01FF70',//'#0004FF',
+				Planck:				'#FFDC00',//'#13ADFB',
+				Cluster:			'#FF851B',//'#0A9C10',
+				Ulysses:			'#FF4136',//'#FDCF08',
+				ESASky:				'#85144b',//'#10115C',
+				ISSSolACES:			'#F012BE',//'#003C02',
+				VOSpace:			'#001f3f',//'#E868EF',
+				Soho:				'#0074D9',//'#19F821',
+				LisaPathfinder:		'#7FDBFF'//'#19F8EE'
+			};
+			
+			// variable storing all the names of the hosts	
+			var hostArray = ['Gaia','Planck','Cluster','Ulysses','ESASky','VOSpace','Soho','LisaPathfinder'];
+						
+			
+			/*************************  Map Settings  ************************/
+			// variables for the differents layers
+			var baseMapDark = L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
+			{attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, '
+			+'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
+			+'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'});
+				
+			var osmLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+			{attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});		
+			
+			var blackAndWhite = L.tileLayer('http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png');
+			
+			var mapLink = '<a href="http://www.esri.com/">Esri</a>';
+        	var wholink = 'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community';
+			var satelliteMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+			{attribution: '&copy; '+mapLink+', '+wholink,
+            maxZoom: 18,
+            });
+							
+			/*  
+				Global variable for our map. 
+				setView allows us to focus on Madrid (lat,lng)
+				with a specific zoom level 
+			*/			
+			var map = L.map('map', {
+    			center: 		[20, 0],
+				zoom: 			3,
+				layers: 		osmLayer,
+				zoomControl:	false
+			});
+			
+			// object storing base layers for the map.
+			// could add as many as you want
+			var baseMaps = {
+				"OSM": 				osmLayer,
+				"CARTO-Dark": 		baseMapDark,
+				"Black and Whilte":	blackAndWhite,
+				"Satellite Map": 	satelliteMap
+			};
+			
+			// add the control layer to the map			
+			L.control.layers(baseMaps).addTo(map);
+			
+			/**************   Active and Deactive Gaia   ***************/
+			// control for to active or to deactive gaia accesses
+			var checkGaia = L.control({position: 'topleft'});
+			var flag = true;
+			checkGaia.onAdd = function(map)
+			{
+				var checker = L.DomUtil.create('div', 'checker');
+				
+				L.DomEvent.on(checker,'click', function()
+				{
+					if(flag){
+						setData();flag=false;
+					} else {
+						setDataGaia();flag=true;
+					}
+				},this);
+				return checker;
+			};
+					
+			/**************   Generate a legend for the map   ***************/
+			// control for generating the interactive legend
+			var legend = L.control({position: 'bottomleft'});
+			
+			// host with accesses in the time span
+			var hostListWithIP = [];
+			
+			legend.onAdd = function (map)
+			{
+				// host without accesses in the time span
+				var diff = $(hostArray).not(hostListWithIP).get();
+				
+				// create the container for the legend
+				var div = L.DomUtil.create('div', 'info legend');
+				
+				div.setAttribute('id','leg-cont');
+				
+				// loop through our ServerColor list and generate
+				// a label with a colored square for each hostListWithIP					
+				for (var i = 0; i < hostListWithIP.length; i++)
+				{		
+									
+						div.innerHTML += 	'<i style="background:' +
+											ServerColor[countHost[i].host.toString()] +
+							 				'"><span class="dot">' +
+							 				countHost[i].count +
+							 				'</span></i> ' +
+							 				countHost[i].host.toString() +
+							 				'<br>';					
+												
+				}		
+				
+				// loop through our diff array and generate
+				// to complete the legend
+				for (var i = 0; i < diff.length; i++)
+				{		
+					div.innerHTML += 	'<i style="background:' +
+										ServerColor[diff[i].toString()] + 
+						 				'"></i> ' + diff[i].toString() +
+						 				'<br>';
+				}
+				
+				var j = 0;
+				var i= 0;		
+				var countClick =[];				
+				
+				/************   Make the Legend Interactive ***********/
+				// adding onclick listener to host with some impact
+				function parseLatLng(arr)
+				{
+					map.setView(arr,5);
+				}			
+				
+				function initEvents() {
+					countHost.forEach( function(el)
+					{
+						j = i*3;
+						var index = el.count - 1;
+							L.DomEvent.on(div.childNodes[j],'click', function()
+							{
+								if (index > 0) {
+									parseLatLng([el.coordList[index][1],el.coordList[index][0]]);
+									index--;
+								} else 
+									{
+										parseLatLng([el.coordList[index][1],el.coordList[index][0]]);
+										index = el.count - 1;
+									}
+							});	
+						i++;			
+					});
+				}
+				
+				initEvents();
+				// hide the welcome message
+				$('#startMessage').css("visibility","hidden");
+				
+				return div;
+			};	
+			
+			
+			/**************   Slide Legend  ***************/
+			// show or hide the legend
+			$('#slide-control-legend').on('click', function()
+			{
+				$('.info.legend').slideToggle("slow");
+			});
+			
+			/**************   Home buton  ***************/
+			var zoomHome = L.Control.zoomHome({zoomHomeIcon:'home'});			
+			zoomHome.addTo(map);
+			
+			
+			/**************   Scale Bar  ***************/
+			L.control.scale(
+			{
+				imperial:	false,
+				position:	'bottomright'
+			}).addTo(map);
+			
+			/**************   Shadow Polygon  ***************/
+			// global variable t: control the shadow over the map 
+			var t = L.terminator(
+			{
+				color:			'#00',
+				fillColor:	 	'#00',
+				fillOpacity:	0.3
+			});
+			
+			t.addTo(map);
+			
+			// refresh the shadow every 0.5"
+			setInterval(function(){ updateTerminator(t)}, 500);
+			
+			function updateTerminator(t)
+			{
+			  var t2 = L.terminator();
+			  t.setLatLngs(t2.getLatLngs());
+			  t.redraw();
+			}			
+			
+			/****************  Migration Layer *******************/
+			// global variable migrationLayer: draw the dots within the map
+			var migrationLayer = new L.migrationLayer(
+			{
+				map: 				map,
+				data: 				allData,
+				pulseRadius:		25,
+				pulseBorderWidth:	2,
+				arcWidth:			0,
+				arcLabel:			false,
+				arcLabelFont:		'10px sans-serif',
+			});
+			
+			function setData()
+			{ 
+				migrationLayer.setData(dataNoGaia);
+			}
+			
+			function setDataGaia(){
+				migrationLayer.setData(allData);
+			}
+			
+			/**************   Restart the animation **************/
+			function play(){
+				migrationLayer.play();
+			}
+			
+			/**************   Pause the animation  ***************/
+			function pause(){
+				migrationLayer.pause();
+			}
+			
+			/**************   Hide the data  ***************/
+			function hide(){
+				migrationLayer.hide();
+			}
+			
+			/**************   Show the data  ***************/
+			function show(){
+				migrationLayer.show();
+			}
+											
+			var pickColor = function(host)
+			{
+				return ServerColor[host];
+			};
+			
+			var callLegend = function()
+			{
+				legend.addTo(map);
+				checkGaia.addTo(map);
+			};
+			
+			/***************  Adding some interaction ****************/
+			map.on('zoomstart', function(e) {
+			   hide();
+			});
+			
+			map.on('moveend', function(e) {
+				if(flag){hide();setDataGaia();show();} else {hide();setData();show();}
+		   
+			});
+			
+			map.on('zoomend', function(e) {
+			   if(flag){hide();setDataGaia();show();} else {hide();setData();show();}
+			});
+			
+			$('#control-play').on('click', function(e){
+				play();
+				if(flag){
+					hide();
+					setDataGaia();
+					show();
+				} else {
+					hide();
+					setData();
+					show();
+				}
+			});
+			
+			$('#control-pause').on('click', function(e){
+				pause();
+			});
+			
+			/***************** AJAX Request ***************/
+			// global variable startSplunk: make a call to the server
+			var startSplunk = function()
+			{
+				var indexPreHost = 0;
+				var indexPostHost = 1;
+				
+				$.ajax(
+				{
+					url:"http://172.25.3.155:8123",
+					dataType: "text",
+					success: function(data)
+					{
+						var geojson = JSON.parse(data);
+						allData = [];
+						countHost = [];
+						hostListWithIP = [];
+						var it = 0;
+						for (var x in geojson.features)
+						{		
+							it++;	
+							var ob = {};
+							ob = {"from":[-4.10,40.10],"to":[],"labels":[null,null]};
+												
+							var currentHost = geojson.features[x].properties.host.toString();
+							
+						//	alert(it+ " -- " + indexPreHost);
+						//	alert(currentHost);	
+							
+							var found = countHost.some(function(el)
+							{
+								return el.host === currentHost;
+							});			
+								
+							if (!found && indexPreHost != indexPostHost)
+							{
+						//		alert('1st if: ' + indexPreHost);
+								
+								countHost.push({"host": currentHost.toString(), "count":1, "coordList":
+									new Array([(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])])}
+								);
+								hostListWithIP.push(currentHost);
+								
+							//	alert('countif: ' + countHost[indexPreHost].count);
+							//	alert('num of coords: ' + countHost[indexPreHost].coordList[0]);
+							//	alert('num of coords: ' + countHost[indexPreHost].coordList.length);
+								indexPostHost--;
+								
+							} else if (!found && indexPreHost == indexPostHost)
+							{
+								indexPreHost++;
+								//alert('1st if: ' + indexPreHost);
+								
+								countHost.push({"host": currentHost.toString(), "count":1, "coordList":
+									new Array([(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])])}
+								);
+								hostListWithIP.push(currentHost);
+								
+								//alert('countif: ' + countHost[indexPreHost].count);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList[0]);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList.length);
+								indexPostHost++;
+																
+							} else {
+						//		alert('1st else: ' + indexPreHost);
+								countHost[indexPreHost].count = countHost[indexPreHost].count + 1;
+								countHost[indexPreHost].coordList.push(
+									[(geojson.features[x].geometry.coordinates[1])
+									,(geojson.features[x].geometry.coordinates[0])]
+								);
+								//alert('countelse: ' + countHost[indexPreHost].count);
+								//alert('num of coords: ' + countHost[indexPreHost].coordList.length);					
+							}				
+					
+						ob.color = pickColor(geojson.features[x].properties.host.toString());		
+						ob.to = [(geojson.features[x].geometry.coordinates[1])
+						,(geojson.features[x].geometry.coordinates[0])];
+						//new feature
+						ob.host = geojson.features[x].properties.host.toString();			
+						allData.push(ob);
+						dataNoGaia = _.filter(allData,function(e){return e.host != "Gaia";});
+												
+						}
+						
+						/*for (var i=0;i<hostListWithIP.length;i++)
+						{
+							alert(countHost[i].host +
+							"<>" +countHost[i].count);
+						}*/
+						//alert(dataNoGaia.length);
+						
+						// varibles useful for showing the date within the header bar
+						var dateNowms = new Date(Date.now());
+						var fiveBefore = dateNowms - 300000;
+						$('#dateNow').text(new Date(dateNowms));
+						$('#dateBefore').text(new Date(fiveBefore));
+		
+					}
+				});
+			};		
+			
+			// initialize ajax request
+			startSplunk();
+			
+			// call again to capture the response of the query
+			setTimeout(startSplunk,3000);
+			
+			// sleep some sec and call to setDataGaia and callLegend
+			setTimeout(setDataGaia,4000);
+			setTimeout(callLegend,4500);
+			
+			// set a interval to repeat the query
+			setInterval(startSplunk,60000);
+			setInterval(setDataGaia,64000);
+			setInterval(callLegend,64500);// 5' * 60" * 1000 ms = 300,000 ms								
+		});
+				
+		</script>
+	</body>
+</html>

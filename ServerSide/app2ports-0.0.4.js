@@ -24,7 +24,7 @@ var searchQueryNRT =
 '| eval host="Gaia"'+
 '| table lat lon Country host _time clientip'+
 '| append [search host="ufa.esac.esa.int"'+
-'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])\\""'+
+'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
 '| eval host="Ulysses"'+
 '| iplocation clientip'+
 '| table  lat lon Country host _time clientip]'+
@@ -58,19 +58,14 @@ var searchQueryNRT =
 '| eval host="Cluster"'+ 
 '| iplocation clientip'+
 '| table clientip lat lon Country host _time clientip]'+
-'| append [search host=ammiapp01'+ 
-'| rex field=_raw "^(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
-'| eval host="ESASky"'+ 
-'| iplocation clientip'+
-'| table clientip lat lon Country host _time clientip]'+
-'| append [search host=ammiapp02'+ 
+'| append [search host=ammiapp01 OR host=ammiapp02 sourcetype=esasky_localhost_access'+ 
 '| rex field=_raw "^(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
 '| eval host="ESASky"'+ 
 '| iplocation clientip'+
 '| table clientip lat lon Country host _time clientip]'+
 '| dedup clientip'+
-'| eval lat=if(lat!="",lat,40)'+
-'| eval lon=if(lon!="",lon,-4)'+
+'| eval lat=if(lat!="",lat,40.4333)'+
+'| eval lon=if(lon!="",lon,-3.9666)'+
 '| table lat lon host _time';
 
 //span time for our nrt search
@@ -183,14 +178,7 @@ var fullHostList = {
 											'| convert mstime(_time) AS ms_time'+
 											'| eval ms_time = ms_time * 1000'+
 											'| table  lat lon Country host ms_time clientip',
-					"ammiapp02":			'| append [search host=ammiapp01'+ 
-											'| rex field=_raw "^(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
-											'| eval host="ESASky"'+ 
-											'| iplocation clientip'+
-											'| convert mstime(_time) AS ms_time'+
-											'| eval ms_time = ms_time * 1000'+
-											'| table  lat lon Country host ms_time clientip]'+
-											'| append [search host=ammiapp02'+ 
+					"ammiapp02":			'| append [search host=ammiapp01 OR host=ammiapp02 sourcetype=esasky_localhost_access'+ 
 											'| rex field=_raw "^(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
 											'| eval host="ESASky"'+ 
 											'| iplocation clientip'+
@@ -233,14 +221,14 @@ var fullHostList = {
 											'| eval ms_time = ms_time * 1000'+
 											'| table  lat lon Country host ms_time clientip]',
 					"ufa.esac.esa.int":		'| append [search host="ufa.esac.esa.int"'+
-											'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])\\""'+
+											'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
 											'| eval host="Ulysses"'+
 											'| iplocation clientip'+
 											'| convert mstime(_time) AS ms_time'+
 											'| eval ms_time = ms_time * 1000'+
 											'| table  lat lon Country host ms_time clientip]',
 					"csa":					'| append [search host="csa"'+
-											'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])\\""'+
+											'| rex field=_raw "(?<clientip>[[octet]]\\.[[octet]]\\.[[octet]]\\.[[octet]])"'+
 											'| eval host="Cluster"'+
 											'| iplocation clientip'+
 											'| convert mstime(_time) AS ms_time'+
@@ -297,8 +285,8 @@ http.createServer(function(req,res)
 		});
 		
 		strQuery += '| dedup clientip'+
-					'| eval lat=if(lat!="",lat,40)'+
-					'| eval lon=if(lon!="",lon,-4)'+
+					'| eval lat=if(lat!="",lat,40.4333)'+
+					'| eval lon=if(lon!="",lon,-3.9666)'+
 					'| table lat lon host ms_time';	
 		
 	} else if (hostQ.includes("gea03.n1data.lan"))
@@ -307,8 +295,8 @@ http.createServer(function(req,res)
 					'| iplocation clientip'+
 					'| eval host="Gaia"'+
 					'| dedup clientip'+
-					'| eval lat=if(lat!="",lat,40)'+
-					'| eval lon=if(lon!="",lon,-4)'+
+					'| eval lat=if(lat!="",lat,40.4333)'+
+					'| eval lon=if(lon!="",lon,-3.9666)'+
 					'| convert mstime(_time) AS ms_time'+
 					'| eval ms_time = ms_time * 1000'+
 					'| table lat lon host ms_time';
@@ -329,8 +317,8 @@ http.createServer(function(req,res)
 			}
 			
 			strQuery +=	'| dedup clientip'+
-						'| eval lat=if(lat!="",lat,40)'+
-						'| eval lon=if(lon!="",lon,-4)'+
+						'| eval lat=if(lat!="",lat,40.4333)'+
+						'| eval lon=if(lon!="",lon,-3.9666)'+
 						'| table lat lon host ms_time';
 			
 		} else {
@@ -341,8 +329,8 @@ http.createServer(function(req,res)
 			var subString = fullHostList[justOneHost].slice(start,end);
 
 			strQuery = subString + 	'| dedup clientip'+
-									'| eval lat=if(lat!="",lat,40)'+
-									'| eval lon=if(lon!="",lon,-4)'+
+									'| eval lat=if(lat!="",lat,40.4333)'+
+									'| eval lon=if(lon!="",lon,-3.9666)'+
 									'| table lat lon host ms_time';
 		}
 	}
